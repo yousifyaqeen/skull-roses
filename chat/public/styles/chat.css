@@ -4,7 +4,7 @@ body {
     font-family: sans-serif;
 }
 * {
-    box-sizing: border-box;   
+    box-sizing: border-box;
 }
 body > div {
     box-shadow: -10px 10px 20px #A0A0A0;
@@ -46,6 +46,19 @@ body > div {
     transform-origin: left center;
     transform: translateX(100%) rotate(90deg);
 }
+#content .skull_game {
+    right: -11px;
+    top: 150px;
+    transform-origin: left center;
+    transform: translateX(100%) rotate(90deg);
+}
+/* #tab{
+    display: block;
+   transform-origin: left center;
+   transform: translateX(100%) rotate(90deg);
+   right: -11px;
+   top: -28px;
+} */
 #content main {
     position: relative;
     height: calc(100% - 30px);
@@ -60,24 +73,24 @@ body > div {
     margin: 3px;
 }
 #content main .mp {
-    color: darkblue;   
+    color: darkblue;
 }
 #content main .moi {
-    color: green;   
+    color: green;
 }
 #content main .system {
-    color: red;   
+    color: red;
 }
 #content main img {
     max-width: 50%;
     vertical-align: text-top;
-}   
+}
 
-/** Pied de zone de chat */        
+/** Pied de zone de chat */
 #content footer {
-    position: absolute; 
+    position: absolute;
     bottom: 0;
-    padding: 0px; 
+    padding: 0px;
     width: calc(100% - 20px);
     height: 30px;
     background-color: inherit;
@@ -93,7 +106,7 @@ body > div {
 #content > footer input:last-child {
     float: right;
 }
-        
+
 #content aside {
     width: 160px;
     float: right;
@@ -104,8 +117,8 @@ body > div {
     line-height: 1;
     font-size: 14px;
 }
-        
-/** 
+
+/**
  * Style pour les émoticones
  */
 .emoji {
@@ -114,48 +127,48 @@ body > div {
     height: 18px;
     background-image: url("../images/emoji.png");
     background-size: 72px 72px;
-}  
+}
 .rire {
-    background-position: -4px -4px;   
+    background-position: -4px -4px;
 }
 .zzz {
-    background-position: -28px -4px;   
+    background-position: -28px -4px;
 }
 .love {
-    background-position: -52px -4px;   
+    background-position: -52px -4px;
 }
 .holala {
-    background-position: -4px -28px;   
+    background-position: -4px -28px;
 }
 .grrr {
-    background-position: -28px -28px;   
+    background-position: -28px -28px;
 }
 .triste {
-    background-position: -52px -28px;   
+    background-position: -52px -28px;
 }
 .sourire {
-    background-position: -4px -52px;   
+    background-position: -4px -52px;
 }
 .banane {
-    background-position: -28px -52px;   
+    background-position: -28px -52px;
 }
 .malade {
-    background-position: -52px -52px;   
+    background-position: -52px -52px;
 }
-        
-        
+
+
 body > div, body > input[type=radio] {
-    display: none;   
+    display: none;
 }
-        
+
 input[type=radio]:checked + div {
-    display: block;   
+    display: block;
 }
-    
-        
+
+
 #logScreen {
     background: rgba(200, 200, 200, 0.8);
-    position: absolute; 
+    position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
@@ -198,7 +211,7 @@ input[type=radio]:checked + div {
     width: calc(100% - 120px);
 }
 #bcImage #btnFermer {
-    position: absolute; 
+    position: absolute;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
