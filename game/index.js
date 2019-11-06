@@ -9,8 +9,8 @@ function log(message){
 // Chargement des modules 
 var express = require('express');
 var app = express();
-var server = app.listen(8080, function() {
-    log("C'est parti ! En attente de connexion sur le port 8080...");
+var server = app.listen(8081, function() {
+    log("C'est parti ! En attente de connexion sur le port 8081...");
 });
 
 // Ecoute sur les websockets
@@ -20,7 +20,7 @@ var io = require('socket.io').listen(server);
 app.use(express.static('public'));
 // set up to 
 app.get('/', function(req, res) {  
-    res.sendFile(__dirname + '/public/chat.html');
+    res.sendFile(__dirname + '/public/game.html');
 });
 //history management
 var history = []
