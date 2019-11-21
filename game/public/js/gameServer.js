@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8080',{'forceNew':true });
+var socket = io.connect('http://localhost:8081',{'forceNew':true });
 var username = "";
 var connected = false;
 var max_search_results = 32;
@@ -117,10 +117,8 @@ function main(){
         document.getElementById("radio2").removeAttribute("checked")
 
     });
-    document.getElementById("skull_game")
-    .addEventListener("click",function(){
-        alert("shit it works");
-    });
+
+
     document.getElementById("btnConnecter")
         .addEventListener("click",function(){
            connect();
@@ -145,6 +143,19 @@ function main(){
             "click",function(){
                 document.getElementById("bcImage").style.display ="none";
             })
+
+        document.getElementById("btn_messages").addEventListener(
+            "click",function(){
+                document.getElementById("div_messages").style.display ="block";
+                document.getElementById("div_users").style.display ="none";
+
+            })
+        document.getElementById("btn_users").addEventListener(
+            "click",function(){
+                document.getElementById("div_users").style.display ="block";
+                document.getElementById("div_messages").style.display ="none";
+
+            })
     
         document.getElementById("btnEnvoyer")
             .addEventListener("click",function(){
@@ -161,7 +172,7 @@ socket.on("bienvenue", function(msg) {
         username = msg
         document.getElementById("radio1").removeAttribute("checked")
         document.getElementById("radio2").checked = true;
-        document.getElementById("login").innerHTML = msg;
+        //document.getElementById("login").innerHTML = msg;
         connected = true;
     }
 });
@@ -193,7 +204,7 @@ socket.on("message", function(msg) {
     }else
         childNode.innerText +=msg.text
 
-    document.querySelector("div#content>main").appendChild(childNode)
+    document.getElementById("div_messages").appendChild(childNode)
 
 });
 /*
@@ -231,8 +242,8 @@ socket.on("history", function(historyArray) {
 */
 
 socket.on("liste", function(msg) {
-    var main = document.querySelector("div#content>aside")
-    main.innerHTML = ""
+    var main = document.getElementById("div_users")
+    main.innerHTML = "" 
     msg.forEach(element => {
         var childNode = document.createElement("p")
         childNode.innerText = element

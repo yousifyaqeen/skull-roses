@@ -4,6 +4,7 @@
   "description": "skull and roses game",
   "main": "index.js",
   "dependencies": {
+    "bootstrap-vertical-tabs": "^1.2.2",
     "express": "^4.17.1",
     "socket.io": "^2.3.0"
   },

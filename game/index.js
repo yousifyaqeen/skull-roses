@@ -20,7 +20,7 @@ var io = require('socket.io').listen(server);
 app.use(express.static('public'));
 // set up to 
 app.get('/', function(req, res) {  
-    res.sendFile(__dirname + '/public/game.html');
+    res.sendFile(__dirname + '/public/gameServer.html');
 });
 //history management
 var history = []
