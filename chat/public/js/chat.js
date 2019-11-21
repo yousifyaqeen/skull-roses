@@ -32,7 +32,7 @@ function displaySearchResults(response){
     //for each item in the list (ideally 32 but could be 0)
     response.data.forEach(element => {
         var img = document.createElement("img")
-        
+
         img.src =  element.images.downsized.url
         img.addEventListener("click", function(){
             sendMessage('<img src=\"'+element.images.downsized.url+'\">');
@@ -45,7 +45,7 @@ function sendMessage(text){
     if(username=="" || username ==null){
         return
     }
-    if(text== ""){ 
+    if(text== ""){
         return
     }
     //is it being sent as a private message ?
@@ -65,14 +65,14 @@ function sendMessage(text){
     }
     var patt_img = /^\[img:.*?\]/;
     var img = text.match(patt_img);
-    
+
     if(img!=null)
         img.forEach( match => {
-            text = text.replace(match,"<img src=\""+match.slice(5,match.length-1)+"\"/>")  
+            text = text.replace(match,"<img src=\""+match.slice(5,match.length-1)+"\"/>")
         });
         //we check if there are emojis in the message
     Object.keys(emojis).forEach(function(key) {
-        text = text.replace(key,emojis[key])  
+        text = text.replace(key,emojis[key])
     });
     if(to==null){
         socket.emit("message", {from : username, to : null,text : text,date : Date.now()});
@@ -94,7 +94,7 @@ function connect(){
 }
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
-  
+
     if (keyName === 'Enter') {
         if(connected){
             var message = document.getElementById("monMessage").value
@@ -104,11 +104,11 @@ document.addEventListener('keydown', (event) => {
             connect();
         }
         }});
- 
+
 
 window.onload = main;
 
-function main(){                    
+function main(){
     document.getElementById("btnQuitter").addEventListener("click",function(){
         socket.emit("logout");
         socket.close();
@@ -117,19 +117,31 @@ function main(){
         document.getElementById("radio2").removeAttribute("checked")
 
     });
+<<<<<<< HEAD
     document.getElementById("skull_game")
     .addEventListener("click",function(){
         alert("shit it works");
+=======
+    document.getElementById("h3Skull_game")
+    .addEventListener("click", function(e){
+        document.getElementById("asideChat").style.display = "none"
+        document.getElementById("asideGame").style.display = "block"
+    });
+    document.getElementById("h3Client")
+    .addEventListener("click", function(e){
+        document.getElementById("asideChat").style.display = "block"
+        document.getElementById("asideGame").style.display = "none"
+>>>>>>> 258aaf8ad4448a5961d33f02820a6d87a1707d2e
     });
     document.getElementById("btnConnecter")
         .addEventListener("click",function(){
            connect();
-        }); 
+        });
         //openning giphy menu
         document.getElementById("btnImage")
         .addEventListener("click",function(){
             document.getElementById("bcImage").style.display ="block";
-        }); 
+        });
 
         document.getElementById("btnRechercher")
         .addEventListener("click",function(){
@@ -139,25 +151,25 @@ function main(){
                 console.log("searching for " + searchText)
                 getSearchGiphyRequest(searchText);
              }
-        }); 
-        
+        });
+
         document.getElementById("btnFermer").addEventListener(
             "click",function(){
                 document.getElementById("bcImage").style.display ="none";
             })
-    
+
         document.getElementById("btnEnvoyer")
             .addEventListener("click",function(){
                     var message = document.getElementById("monMessage").value
                     sendMessage(message)
-                
+
             });
-     
+
 
 }
 socket.on("bienvenue", function(msg) {
     if(!connected){
-        console.log("Le serveur me souhaite la bienvenue : " + msg);  
+        console.log("Le serveur me souhaite la bienvenue : " + msg);
         username = msg
         document.getElementById("radio1").removeAttribute("checked")
         document.getElementById("radio2").checked = true;
@@ -178,7 +190,7 @@ socket.on("message", function(msg) {
             childNode.setAttribute("class" , "moi")
         }
         childNode.innerText +=msg.from
-    }else{  
+    }else{
         childNode.setAttribute("class" , "system")
         childNode.innerText += "[admin]"
     }
@@ -203,7 +215,7 @@ socket.on("history", function(historyArray) {
         var dateString = date.getHours() + ":"
         dateString += date.getMinutes() + ":"
         dateString += date.getSeconds()
-        
+
     var childNode = document.createElement("p")
     childNode.innerText = dateString
     childNode.innerText += " - "
@@ -212,7 +224,7 @@ socket.on("history", function(historyArray) {
             childNode.setAttribute("class" , "moi")
         }
             childNode.innerText +=msg.from
-    }else{  
+    }else{
         childNode.setAttribute("class" , "system")
         childNode.innerText += "[admin]"
     }
@@ -231,7 +243,7 @@ socket.on("history", function(historyArray) {
 */
 
 socket.on("liste", function(msg) {
-    var main = document.querySelector("div#content>aside")
+    var main = document.getElementById("asideChat")
     main.innerHTML = ""
     msg.forEach(element => {
         var childNode = document.createElement("p")

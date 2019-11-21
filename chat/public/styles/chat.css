@@ -46,19 +46,10 @@ body > div {
     transform-origin: left center;
     transform: translateX(100%) rotate(90deg);
 }
-#content .skull_game {
+#content #h3Skull_game {
     right: -11px;
     top: 150px;
-    transform-origin: left center;
-    transform: translateX(100%) rotate(90deg);
 }
-/* #tab{
-    display: block;
-   transform-origin: left center;
-   transform: translateX(100%) rotate(90deg);
-   right: -11px;
-   top: -28px;
-} */
 #content main {
     position: relative;
     height: calc(100% - 30px);
@@ -234,4 +225,8 @@ input[type=radio]:checked + div {
     height: auto;
     cursor: pointer;
     align-self: center;
+}
+
+#asideGame {
+    display: none;
 }
