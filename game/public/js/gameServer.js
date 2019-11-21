@@ -3,6 +3,7 @@ var username = "";
 var connected = false;
 var max_search_results = 32;
 var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
+var roomKey = "";
 /**
  * search for gifs using the giphy API
  * @param   {JSON String} response [the parsed response]
@@ -75,11 +76,12 @@ function sendMessage(text){
         text = text.replace(key,emojis[key])  
     });
     if(to==null){
-        socket.emit("message", {from : username, to : null,text : text,date : Date.now()});
+        socket.emit("message", {from : username, roomKey:roomKey ,to : null,text : text,date : Date.now()});
+        console.log(roomKey)
     }
-    else{
-        socket.emit("message", {from : username, to :to[0].substr(1),text : text.substr(to[0].length+1),date : Date.now()});
-    }
+ /*   else{
+        socket.emit("message", {from : username, roomId:roomId , to :to[0].substr(1),text : text.substr(to[0].length+1),date : Date.now()});
+    }*/
     document.getElementById("monMessage").value=""
 
 }
@@ -88,8 +90,11 @@ function connect(){
     socket.open();
     if(!connected){
         username = document.getElementById("pseudo").value
-    if(username != "")
-     socket.emit("login", username);
+        roomKey = document.getElementById("key").value
+        if(roomKey == "")
+            roomKey = null
+        if(username != "")
+            socket.emit("join", username,roomKey);
     }
 }
 document.addEventListener('keydown', (event) => {
@@ -169,7 +174,8 @@ function main(){
 socket.on("bienvenue", function(msg) {
     if(!connected){
         console.log("Le serveur me souhaite la bienvenue : " + msg);  
-        username = msg
+        username = msg.clientId
+        roomKey =  msg.roomKey
         document.getElementById("radio1").removeAttribute("checked")
         document.getElementById("radio2").checked = true;
         //document.getElementById("login").innerHTML = msg;
