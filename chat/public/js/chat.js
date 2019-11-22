@@ -117,11 +117,6 @@ function main(){
         document.getElementById("radio2").removeAttribute("checked")
 
     });
-<<<<<<< HEAD
-    document.getElementById("skull_game")
-    .addEventListener("click",function(){
-        alert("shit it works");
-=======
     document.getElementById("h3Skull_game")
     .addEventListener("click", function(e){
         document.getElementById("asideChat").style.display = "none"
@@ -131,7 +126,6 @@ function main(){
     .addEventListener("click", function(e){
         document.getElementById("asideChat").style.display = "block"
         document.getElementById("asideGame").style.display = "none"
->>>>>>> 258aaf8ad4448a5961d33f02820a6d87a1707d2e
     });
     document.getElementById("btnConnecter")
         .addEventListener("click",function(){
