@@ -1,2 +1,4 @@
 # skull-roses
-# By yousif and titouan
+## REQUIRED npm packages
+- express
+- sockets
