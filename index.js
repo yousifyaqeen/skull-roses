@@ -161,6 +161,9 @@ io.on('connection', function (socket) {
         while (room.players[id]) {
             id = id + "(1)";   
         }
+        app.get('/skullandroses', function(req, res) {  
+            res.sendFile(__dirname + '/public/game/gameServer.html');
+        });
         currentID = id;
         //add player to room
         room.addPlayer(socket,id);

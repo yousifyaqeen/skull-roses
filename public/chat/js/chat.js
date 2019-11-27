@@ -3,6 +3,7 @@ var username = "";
 var connected = false;
 var max_search_results = 32;
 var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
+var currentlyPlaying = 0;
 /**
  * search for gifs using the giphy API
  * @param   {JSON String} response [the parsed response]
@@ -117,16 +118,6 @@ function main(){
         document.getElementById("radio2").removeAttribute("checked")
 
     });
-    document.getElementById("btnSkullGame")
-    .addEventListener("click", function(e){
-        document.getElementById("asideChat").style.display = "none"
-        document.getElementById("asideGame").style.display = "block"
-    });
-    document.getElementById("btnClient")
-    .addEventListener("click", function(e){
-        document.getElementById("asideChat").style.display = "block"
-        document.getElementById("asideGame").style.display = "none"
-    });
     document.getElementById("btnConnecter")
         .addEventListener("click",function(){
            connect();
@@ -158,7 +149,26 @@ function main(){
                     sendMessage(message)
 
             });
-
+            document.getElementById("btnHeberger")
+            .addEventListener("click",function(){
+                    var createGame = document.getElementById("tabs")
+                    var button = document.createElement("input");
+                    button.type = "button"
+                    button.value = "Skull & Roses"
+                    button.classList = "btn btn-primary btn-lg"
+                    button.id = "btnSkullAndRoses"
+                    button.dataset.index = currentlyPlaying++;                 
+                    createGame.appendChild(button);
+                    var game =document.createElement("div")
+                    game.id = "skullandroses"
+                    game.class = "content"
+                    game.dataset.id = currentlyPlaying
+                    document.querySelector("body").appendChild(game)
+                    
+                     $(function(){
+                         $("#skullandroses").load("/game/gameServer.html"); 
+                       });
+            });
 
 }
 socket.on("bienvenue", function(msg) {

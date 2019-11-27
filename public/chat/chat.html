@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="./chat/styles/chat.css">
     <script src="/socket.io/socket.io.js"></script>
     <script src="./chat/js/chat.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <!-- <script src="/game/js/gameServer.js"></script> -->
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="./chat/styles/bootstrap.min.css" >
     <link rel="stylesheet" href="./chat/styles/chat.css">
@@ -23,16 +25,14 @@
         </div>
     </div>
     <input type="radio" name="btnScreen" id="radio2">
-    <div id="content">
+    <div id="content" class="content">
         <!-- <h2>Chat des L3 - <span id="login"></span></h2> -->
         <!-- <h3 id="h3Client">Clients connectés</h3>
         <h3 id="h3Skull_game">Skull & Roses</h3> -->
+        <div id="tabs">
         <input type="button" value="Chat Général" class="btn btn-primary btn-lg" id="btnGeneralChat">
-        <input type="button" value="Skull & Roses" class="btn btn-primary btn-lg" id="btnSkullAndRoses">
-        <aside id="asideBtn">
-            <input type="button" value="Clients connectés" id="btnClient" class="btn btn-primary btn-lg btn-aside">
-            <input type="button" value="Skull & Roses" id="btnSkullGame" class="btn btn-primary btn-lg btn-aside">
-        </aside>
+        </div>
+<div id="generalchat" class="content">
         <div id="thingsAside">
             <h2>Client connectés</h2>
             <aside id="asideChat">
@@ -53,6 +53,7 @@
             <input type="button" value="Image" id="btnImage">
             <input type="button" value="Quitter" id="btnQuitter">
         </footer>
+
         <div id="bcImage" style="display: none;">
             <header>
                 <input type="text" id="recherche" placeholder="Tapez ici le texte de votre recherche">
@@ -62,6 +63,9 @@
             <footer><input type="button" value="Fermer" id="btnFermer"></footer>
         </div>
     </div>
+    </div>
+
+    
 </body>
 
 </html>

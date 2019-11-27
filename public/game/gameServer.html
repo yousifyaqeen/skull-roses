@@ -1,73 +1,25 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/game/styles/bootstrap.min.css" >
-    <link rel="stylesheet" href="/game/styles/chat.css">
-    <title>Hello, world!</title>
-  </head>
-  <body>
-      <input type="radio" name="btnScreen" id="radio1" checked>
-      <div id="logScreen">
-          <div id="connexion">
-              <p>Choisissez votre pseudo : <br>
-              <input type="text" id="pseudo" placeholder="Tapez ici votre pseudo" size="30">
-              <input type="text" id="key" placeholder="roomKey" size="30">
-              <input type="button" value="Se connecter" id="btnConnecter">
-              </p>
-          </div>
-      </div>
-      <input type="radio" name="btnScreen" id="radio2">
-    <div id= "app" class="container-fluid" >
-        <h2 style="font-size:3vw" class="text-center">Skull and Roses</h2>
-           
-        <!-- Control the column width, and how they should appear on different devices -->
-        <div class="row "  style="height:90vh"  >
-            <div class="border border-primary h-100 col-8" id="game"></div>
-            <div class="col-4 h-100" >
-              <div class="row "  style="height:90vh"  >
-                <div id="sideBar" class="border border-secondary h-100 col-11" "> 
-                    <div id="div_messages" style="display: none;"></div>
-                    <div id="div_users"></div>
-
-                </div>
-                <div class="h-100 col-1" style="padding: 0px;" >
-                    <div class="btn-group-vertical">
-                        <input  class="btn btn-primary" style="transform: rotate(90deg); transform-origin: left top 0; " type="button" value="Chat" id="btn_messages">
-                        <input  class="btn btn-primary"style="transform: rotate(90deg); transform-origin: left top 0;"" type="button" value="Users" id="btn_users">
-                    </div>
-                  
-              </div>
-              </div>
-            </div>
+        <div id="thingsAside">
+            <h2>Client connectés</h2>
+            <aside id="asideChat">
+            </aside>
+            <h2>Play : Skull & Roses</h2>
+            <aside id="asideGame">
+            </aside>
         </div>
-
-        <div class="row" style="height:4vh"  >
-            <div id="bcImage" style="display: none;">
-                <header>
-                    <input type="text" id="recherche" placeholder="Tapez ici le texte de votre recherche">
-                    <input type="button" value="Recherche" id="btnRechercher">
-                </header>
-                <div id="bcResults"></div>
-                <footer><input type="button" value="Fermer" id="btnFermer"></footer>
-            </div>
-                <input  class="col-8" type="text" id="monMessage">  
-                <div class="col-1"></div>
-                <input  class="btn btn-primary col-1" style="font-size:1vw" type="button" value="Envoyer" id="btnEnvoyer">
-                <input  class="btn btn-primary col-1" type="button" value="Image" id="btnImage">
-                <input  class="btn btn-danger col-1" type="button" value="Quitter" id="btnQuitter">
-          </div>
+        <main>
+        </main>
+        <footer>
+            <input type="text" id="monMessage">
+            <input type="button" value="Envoyer" id="btnEnvoyer">
+            <input type="button" value="Image" id="btnImage">
+            <input type="button" value="Quitter" id="btnQuitter">
+        </footer>
+        <div id="bcImage" style="display: none;">
+            <header>
+                <input type="text" id="recherche" placeholder="Tapez ici le texte de votre recherche">
+                <input type="button" value="Recherche" id="btnRechercher">
+            </header>
+            <div id="bcResults"></div>
+            <footer><input type="button" value="Fermer" id="btnFermer"></footer>
         </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="/game/js/jquery-3.3.1.slim.min.js" ></script>
-    <script src="/game/js/popper.min.js" ></script>
-    <script src="/game/js/bootstrap.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/game/js/gameServer.js"></script>
-</body>
-</html>
+    
