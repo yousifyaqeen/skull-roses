@@ -4,6 +4,7 @@ var connected = false;
 var max_search_results = 32;
 var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
 var currentlyPlaying = 0;
+var tabs = []
 /**
  * search for gifs using the giphy API
  * @param   {JSON String} response [the parsed response]
@@ -110,6 +111,7 @@ document.addEventListener('keydown', (event) => {
 window.onload = main;
 
 function main(){
+    tabs.push(document.getElementById("generalchat"))
     document.getElementById("btnQuitter").addEventListener("click",function(){
         socket.emit("logout");
         socket.close();
@@ -118,6 +120,13 @@ function main(){
         document.getElementById("radio2").removeAttribute("checked")
 
     });
+    document.getElementById("btnGeneralChat").addEventListener("click",function(){
+        tabs.forEach(t => {
+            t.style.display = "none"
+        });
+        document.getElementById("generalchat").style.display = "contents"
+    
+    })
     document.getElementById("btnConnecter")
         .addEventListener("click",function(){
            connect();
@@ -152,22 +161,34 @@ function main(){
             document.getElementById("btnHeberger")
             .addEventListener("click",function(){
                     var createGame = document.getElementById("tabs")
-                    var button = document.createElement("input");
-                    button.type = "button"
-                    button.value = "Skull & Roses"
-                    button.classList = "btn btn-primary btn-lg"
-                    button.id = "btnSkullAndRoses"
-                    button.dataset.index = currentlyPlaying++;                 
-                    createGame.appendChild(button);
+                  
                     var game =document.createElement("div")
-                    game.id = "skullandroses"
                     game.class = "content"
-                    game.dataset.id = currentlyPlaying
-                    document.querySelector("body").appendChild(game)
+                    game.dataset.id = currentlyPlaying++
+                    game.dataset.game_name = "skullandroses"
+
+                    game.style.display ="none"
+                    tabs.push(game);
+                    document.getElementById("content").appendChild(game)
                     
                      $(function(){
-                         $("#skullandroses").load("/game/gameServer.html"); 
+                         $("[data-game_name='skullandroses']").load("/game/gameServer.html"); 
                        });
+
+
+                       var button = document.createElement("input");
+                       button.type = "button"
+                       button.value = "Skull & Roses"
+                       button.classList = "btn btn-primary btn-lg"
+                       button.id = "btnSkullAndRoses"
+                       button.dataset.index = currentlyPlaying;  
+                       button.addEventListener("click",function(){
+                           tabs.forEach(t => {
+                               t.style.display = "none"
+                           });
+                           game.style.display = "contents"
+                       })               
+                       createGame.appendChild(button);
             });
 
 }
@@ -175,7 +196,7 @@ socket.on("bienvenue", function(msg) {
     if(!connected){
         console.log("Le serveur me souhaite la bienvenue : " + msg);
         username = msg
-        document.getElementById("radio1").removeAttribute("checked")
+        //document.getElementById("radio1").removeAttribute("checked")
         document.getElementById("radio2").checked = true;
         // document.getElementById("login").innerHTML = msg;
         connected = true;
