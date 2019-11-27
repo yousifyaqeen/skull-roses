@@ -4,6 +4,8 @@ var connected = false;
 var max_search_results = 32;
 var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
 var roomKey = "";
+
+var currentGame = -1;
 /**
  * search for gifs using the giphy API
  * @param   {JSON String} response [the parsed response]
@@ -28,7 +30,7 @@ function getSearchGiphyRequest(searchString){
  */
 function displaySearchResults(response){
     //div holding all the gifs
-    var container  = document.getElementById("bcResults");
+    var container  = document.querySelector("div[data-id='"+currentlyPlaying+"'] #div[data-id='"+currentlyPlaying+"']>#bcImage>#bcResults");
     //console.log("parsing response")
     //for each item in the list (ideally 32 but could be 0)
     response.data.forEach(element => {
@@ -82,7 +84,7 @@ function sendMessage(text){
  /*   else{
         socket.emit("message", {from : username, roomId:roomId , to :to[0].substr(1),text : text.substr(to[0].length+1),date : Date.now()});
     }*/
-    document.getElementById("monMessage").value=""
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #monMessage").value=""
 
 }
 //connect to server
@@ -90,9 +92,10 @@ function connect(){
     socket.open();
     if(!connected){
         username = document.getElementById("pseudo").value
-        roomKey = document.getElementById("key").value
-        if(roomKey == "")
-            roomKey = null
+        console.log("my name " + username)
+        //roomKey = document.querySelector("div[data-id='"+currentlyPlaying+"'] #key").value
+       /* if(roomKey == "")
+            roomKey = null*/
         if(username != "")
             socket.emit("join", username,roomKey);
     }
@@ -102,7 +105,7 @@ document.addEventListener('keydown', (event) => {
   
     if (keyName === 'Enter') {
         if(connected){
-            var message = document.getElementById("monMessage").value
+            var message = document.querySelector("div[data-id='"+currentlyPlaying+"'] #monMessage").value
             sendMessage(message)
         }
         if(!connected){
@@ -114,57 +117,57 @@ document.addEventListener('keydown', (event) => {
 window.onload = main;
 
 function main(){                    
-    document.getElementById("btnQuitter").addEventListener("click",function(){
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnQuitter").addEventListener("click",function(){
         socket.emit("logout");
         socket.close();
         connected = false;
-        document.getElementById("radio1").checked = true;
-        document.getElementById("radio2").removeAttribute("checked")
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #radio1").checked = true;
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #radio2").removeAttribute("checked")
 
     });
 
 
-    document.getElementById("btnConnecter")
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnConnecter")
         .addEventListener("click",function(){
            connect();
         }); 
         //openning giphy menu
-        document.getElementById("btnImage")
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnImage")
         .addEventListener("click",function(){
-            document.getElementById("bcImage").style.display ="block";
+            document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="block";
         }); 
 
-        document.getElementById("btnRechercher")
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnRechercher")
         .addEventListener("click",function(){
             console.log("search clicked")
-            var searchText = document.getElementById("recherche").value
+            var searchText = document.querySelector("div[data-id='"+currentlyPlaying+"'] #recherche").value
             if(searchText!=""){
                 console.log("searching for " + searchText)
                 getSearchGiphyRequest(searchText);
              }
         }); 
         
-        document.getElementById("btnFermer").addEventListener(
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnFermer").addEventListener(
             "click",function(){
-                document.getElementById("bcImage").style.display ="none";
+                document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="none";
             })
 
-        document.getElementById("btn_messages").addEventListener(
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_messages").addEventListener(
             "click",function(){
-                document.getElementById("div_messages").style.display ="block";
-                document.getElementById("div_users").style.display ="none";
+                document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="block";
+                document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="none";
 
             })
-        document.getElementById("btn_users").addEventListener(
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_users").addEventListener(
             "click",function(){
-                document.getElementById("div_users").style.display ="block";
-                document.getElementById("div_messages").style.display ="none";
+                document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="block";
+                document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="none";
 
             })
     
-        document.getElementById("btnEnvoyer")
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnEnvoyer")
             .addEventListener("click",function(){
-                    var message = document.getElementById("monMessage").value
+                    var message = document.querySelector("div[data-id='"+currentlyPlaying+"'] #monMessage").value
                     sendMessage(message)
                 
             });
@@ -176,9 +179,9 @@ socket.on("bienvenue", function(msg) {
         console.log("Le serveur me souhaite la bienvenue : " + msg);  
         username = msg.clientId
         roomKey =  msg.roomKey
-        document.getElementById("radio1").removeAttribute("checked")
-        document.getElementById("radio2").checked = true;
-        //document.getElementById("login").innerHTML = msg;
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #radio1").removeAttribute("checked")
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #radio2").checked = true;
+        //document.querySelector("div[data-id='"+currentlyPlaying+"'] #login").innerHTML = msg;
         connected = true;
     }
 });
@@ -211,7 +214,7 @@ socket.on("message", function(msg) {
     }else
         childNode.innerText +=msg.text
 
-    document.getElementById("div_messages").appendChild(childNode)
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").appendChild(childNode)
 
 });
 /*
@@ -249,7 +252,7 @@ socket.on("history", function(historyArray) {
 */
 
 socket.on("liste", function(msg) {
-    var main = document.getElementById("div_users")
+    var main = document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users")
     main.innerHTML = "" 
     msg.forEach(element => {
         var childNode = document.createElement("p")

@@ -3,7 +3,7 @@ var username = "";
 var connected = false;
 var max_search_results = 32;
 var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
-var currentlyPlaying = 0;
+var currentlyPlaying = -1;
 var tabs = []
 /**
  * search for gifs using the giphy API
@@ -107,7 +107,6 @@ document.addEventListener('keydown', (event) => {
         }
         }});
 
-
 window.onload = main;
 
 function main(){
@@ -189,6 +188,11 @@ function main(){
                            game.style.display = "contents"
                        })               
                        createGame.appendChild(button);
+                       console.log(currentlyPlaying)
+                        if(currentlyPlaying==0){
+                           var obj =  document.createElement('script')
+                           obj.src = "/game/js/gameServer.js"
+                        document.querySelector("head").appendChild(obj)}
             });
 
 }
