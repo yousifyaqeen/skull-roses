@@ -14,7 +14,7 @@ function log(message){
 var express = require('express');
 var app = express();
 var server = app.listen(8080, function() {
-    log("C'est parti ! En attente de connexion sur le port 8081...");
+    log("C'est parti ! En attente de connexion sur le port 8080...");
 });
 
 // Ecoute sur les websockets
@@ -31,8 +31,7 @@ app.get('/skullandroses', function(req, res) {
 });
 
 app.post('/skullandroses', function (req, res) {
-    console.log(req.body)
-
+    log(req.body)
   })
 
 
@@ -152,6 +151,7 @@ io.on('connection', function (socket) {
                 room = rooms.find(room => room.getKey()==key);
                 console.log(room)
             }
+        //creating new room 
         if(room==null){
                 var roomId =  Math.random().toString(10).substr(2, 5);      
                 room= new Room(roomId,true);
