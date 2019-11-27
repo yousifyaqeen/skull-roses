@@ -18,8 +18,8 @@ body > div {
     transform: translateX(-50%) translateY(-50%);
     -webkit-transform: translateX(-50%) translateY(-50%);
     -ms-transform: translateX(-50%) translateY(-50%);
-    height: 90%;
-    width: 90%;
+    height: 500px;
+    width: 700px;
     background-color: beige;
     padding: 10px;
 }
@@ -46,14 +46,14 @@ body > div {
     transform-origin: left center;
     transform: translateX(100%) rotate(90deg);
 }
-#content #btnSkullGame {
+#content #h3Skull_game {
     right: -11px;
     top: 150px;
 }
 #content main {
     position: relative;
-    height: 90%;
-    width: 70%;
+    height: calc(100% - 30px);
+    width: calc(100% - 170px);
     background-color: white;
     overflow-y: scroll;
     line-height: 1.2;
@@ -99,32 +99,14 @@ body > div {
 }
 
 #content aside {
-    width: 100%;
+    width: 160px;
     float: right;
-    /* margin: 0px 10px 0px 0px; */
-    /* padding: 5px; */
-    height: calc(50% - 30px);
-    background-color: white;
-    line-height: 1;
-    font-size: 14px;
-}
-
-#content #thingsAside {
-    position: relative;
-    width: 20%;
-    float: right;
-    margin: 0px 10px 0px 0px;
+    margin: 0px;
     padding: 5px;
     height: calc(100% - 30px);
     background-color: white;
     line-height: 1;
     font-size: 14px;
-    display: flex;
-    flex-direction: column;
-}
-
-#content #thingsAside h2 {
-    position: initial;
 }
 
 /**
@@ -246,26 +228,5 @@ input[type=radio]:checked + div {
 }
 
 #asideGame {
-    /* display: none; */
-}
-
-#content>#asideBtn {
-    width: 60px;
-    float: right;
-    margin: 0px;
-    padding: 5px;
-    height: calc(100% - 30px);
-    background-color: white;
-    line-height: 1;
-    font-size: 14px;
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-
     display: none;
-}
-
-#asideBtn>input {
-    transform: rotate(90deg);
-    transform-origin: left;
 }
