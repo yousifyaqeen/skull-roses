@@ -238,6 +238,38 @@ io.on('connection', function (socket) {
      *  Réception d'un message et transmission à tous.
      *  @param  msg     Object  le message à transférer à tous  
      */
+    socket.on("invite", function(msg) {
+        log("Message recieved");   
+        // Add the date if missing
+        msg.date = Date.now();
+        // si message privé, envoi seulement au destinataire
+       /* if (msg.to != null && clients[msg.to] !== undefined) {
+            log(" --> message privé");
+            clients[msg.to].emit("message", msg);
+            if (msg.from != msg.to) {
+                socket.emit("message", msg);
+            }
+        }
+        else {
+            log(" --> broadcast");
+            io.sockets.emit("message", msg);
+            addToHistory(msg)
+        }*/
+        if(msg.from !=null){
+            log(" --> broadcast");
+            rooms.forEach(room => {
+                room.sendMessage(msg)
+            });
+            addToHistory(msg)
+         }else{
+            log("Ignoring message because the sender is null ");   
+
+         }
+    });
+    /**
+     *  Réception d'un message et transmission à tous.
+     *  @param  msg     Object  le message à transférer à tous  
+     */
     socket.on("message", function(msg) {
         log("Reçu message");   
         // si jamais la date n'existe pas, on la rajoute

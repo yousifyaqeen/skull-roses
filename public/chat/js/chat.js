@@ -195,6 +195,11 @@ function main(){
 
 }
 
+function invite(usersToInvite,roomId){
+    if(usersToInvite.length<6)
+        socket.emit("invite" , players,roomId,keys[roomId])
+}
+
 function joinGame(key){
     socket.emit("join",username,key)
 
@@ -241,7 +246,7 @@ socket.on("message", function(msg) {
 
 });
 
-socket.on("invite", function(msg) {
+socket.on("invitation", function(msg) {
     var date = new Date (msg.date);
     var dateString = date.getHours() + ":"
     dateString += date.getMinutes() + ":"
@@ -330,7 +335,7 @@ socket.on("getKey",function(key,id){
        console.log("HEllo")
        var button = document.createElement("input");
        button.type = "button"
-       button.value = "Skull & Roses"
+       button.value = "S&R | "+ id
        button.classList = "btn btn-primary btn-lg"
        button.id = "btnSkullAndRoses"
        button.dataset.index = id;
@@ -378,8 +383,9 @@ socket.on("messageGame", function(id,msg) {
     document.querySelector("div[data-id='"+id+"'] main").appendChild(childNode)
 });
 
-/*
+
 socket.on("Gameliste", function(roomId,msg) {
+    console.log(msg)
     if(keys[roomId]!=null){
            var checkIsReady =  setInterval(function(main){
                 var main = document.querySelector("div[data-id='"+roomId+"'] div[id='thingsAside']")
@@ -396,7 +402,7 @@ socket.on("Gameliste", function(roomId,msg) {
 }
 
 });
-*/
+
 function initilizeGames(){
 
     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnImage")
