@@ -6,7 +6,21 @@ var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
 var currentlyPlaying = -1;
 var tabs = []
 var keys = []
-var playersList = []
+var clinetListGeneral = [] // players in the general chat
+//todo comment
+class Room{
+    roomKey
+    roomId
+    playerList = []
+    constructor(roomKey,roomId){
+        this.playerList.push(username)
+        this.roomKey=roomKey
+        this.roomId=roomId
+    }
+}
+//holds all the game rooms except the general chat
+var rooms = []
+
 /**
  * search for gifs using the giphy API
  * @param   {JSON String} response [the parsed response]
@@ -168,6 +182,11 @@ function main(){
             "click",function(){
                 document.getElementById("selectGuest").style.display ="none";
             })
+            document.getElementById("selectRoombtnFermer").addEventListener(
+                "click",function(){
+                    document.getElementById("selectRoom").style.display ="none";
+                })
+    
 
         document.getElementById("btnEnvoyer")
             .addEventListener("click",function(){
@@ -183,36 +202,93 @@ function main(){
 
         document.getElementById("btnInviter")
             .addEventListener("click",function(){
+                document.getElementById("selectRoom").style.display ="block"
+                var roomList = document.getElementById("selectRoomResult")
+                roomList.innerHTML =""
+                rooms.forEach(room => {
+                    var childNode = document.createElement("div")
+                            var input = document.createElement("input")
+                            input.type = "checkbox"
+                            input.id = room.roomId
+                            input.name = room.roomId
+                            var label = document.createElement("label")
+                            label.for = room.roomId
+                            label.innerHTML = room.roomId
+                            childNode.appendChild(input)
+                            childNode.appendChild(label)
+                            roomList.appendChild(childNode)
+                })
+                //todo correct radio buttons (put radios in one div)
+                $('#selectRoom input[type=checkbox]').change(function(e){
+                    if ($('#selectRoom input[type=checkbox]:checked').length > 1) {
+                         $(this).prop('checked', false)
+                    }
+                 })
 
-                   document.getElementById("selectGuest").style.display="block"
+                document.getElementById("selectRoombtnSelect").addEventListener("click",function(){
+                //todo fix multiple selections
+                var selectedRoomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
+
+                    console.log(selectedRoomId)
+                    document.getElementById("selectGuest").style.display="block"
                     var main = document.getElementById("selectGuestResult")
                     main.innerHTML = ""
-                    playersList.forEach(element => {
-                        var childNode = document.createElement("div")
-                        var input = document.createElement("input")
-                        input.type = "checkbox"
-                        input.id = element
-                        input.name = element
-                        var label = document.createElement("label")
-                        label.for = element
-                        label.innerHTML = element
-                        childNode.appendChild(input)
-                        childNode.appendChild(label)
-                        main.appendChild(childNode)
+                    //correct client 
+                    clinetListGeneral.forEach(element => {
+                        //console.log(rooms[selectedRoomId]);
+                        //console.log(element)
+                        if(rooms[selectedRoomId].playerList[element]==null){
+                            var childNode = document.createElement("div")
+                            var input = document.createElement("input")
+                            input.type = "checkbox"
+                            input.id = element
+                            input.name = element
+                            var label = document.createElement("label")
+                            label.for = element
+                            label.innerHTML = element
+                            childNode.appendChild(input)
+                            childNode.appendChild(label)
+                            main.appendChild(childNode)
+                        }
                     });
+                    $('#selectGuest input[type=checkbox]').change(function(e){
+                        if ($('#selectGuest input[type=checkbox]:checked').length > 5) {
+                             $(this).prop('checked', false)
+                        }
+                     })
+                     document.getElementById("selectGuestbtnSelect").addEventListener("click",function(){
+
+                         var playerarray = []
+                        var guestList = document.querySelector('#selectGuest input[type=checkbox]:checked');
+                        if(Array.isArray(guestList))
+                            guestList.forEach(element => {
+                                playerarray.push(element.id)
+                            });
+                        else
+                            playerarray.push(guestList.id)
+
+                        invite(playerarray,selectedRoomId);
+                     })
+
+
+                });
+
+
+                   
             });
 
 }
 
 function invite(usersToInvite,roomId){
+    console.log("HERE IM HERE BITCH")
     if(usersToInvite.length<6)
-        socket.emit("invite" , players,roomId,keys[roomId])
+        socket.emit("invite" , usersToInvite,roomId,rooms[roomId].roomKey)
 }
 
 function joinGame(key){
     socket.emit("join",username,key)
-
 }
+
 socket.on("bienvenue", function(msg) {
     if(!connected){
         console.log("Le serveur me souhaite la bienvenue : " + msg);
@@ -268,8 +344,8 @@ socket.on("invitation", function(msg) {
     childNode.innerText += msg.from
     childNode.innerText += " Invited you to play " + msg.game_name;
     var invitationUrl = document.createElement("a")
-    .innerText = "Click to Join"
-    .addEventListener("click",function(){
+        invitationUrl.innerText = "Click to Join"
+        invitationUrl.addEventListener("click",function(){
         joinGame(msg.key)
     })
 
@@ -281,7 +357,7 @@ socket.on("invitation", function(msg) {
 socket.on("liste", function(msg) {
     var main = document.getElementById("asideChat")
     main.innerHTML = ""
-    playersList = msg
+    clinetListGeneral = msg
     msg.forEach(element => {
         var childNode = document.createElement("p")
         childNode.innerText = element
@@ -324,6 +400,9 @@ socket.on("messageGame", function(id,msg) {
 
 
 socket.on("getKey",function(key,id){
+    var room = new Room(key,id);
+
+    rooms[id] = room
     keys[id] = key;
     console.log("my fucking key is  " + key);
 
@@ -393,10 +472,10 @@ socket.on("messageGame", function(id,msg) {
 });
 
 
-socket.on("Gameliste", function(roomId,msg) {
-    console.log(msg)
-    /*if(keys[roomId]!=null){
-           var checkIsReady =  setInterval(function(main){
+socket.on("Gameliste", function(roomId,players) {
+    console.log(players)
+    if(rooms[roomId]!=null){
+          /* var checkIsReady =  setInterval(function(main){
                 var main = document.querySelector("div[data-id='"+roomId+"'] div[id='thingsAside']")
                 if(main!=null){
                 main.innerHTML = ""
@@ -408,6 +487,8 @@ socket.on("Gameliste", function(roomId,msg) {
                     clearInterval(checkIsReady)
                 }
             }, 500);*/
+            rooms[roomId].playerList = players
+
 }
 
 });

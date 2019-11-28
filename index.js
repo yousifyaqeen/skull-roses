@@ -4,6 +4,9 @@
 * in the second case we refuse the connection
 */
 
+/*** Gestion des clients et des connexions ***/
+var clients = {};       // id -> socket
+
 function log(message){
     var options = {year: 'numeric', month: 'long', day: 'numeric' ,hour : 'numeric',minute: 'numeric'  ,second: 'numeric' };
     var date = new Date(Date.now())
@@ -118,6 +121,14 @@ class Room {
         }
 
     }
+    sendInvitation(players,roomKey){
+        players.forEach( p => {
+            if(clients[p]!=null){
+                log("sent invitation")
+                clients[p].emit("invitation",{date:Date.now(),from:"YourFather",game_name:"SkullAndRoses",key:roomKey})
+            }
+        });
+    }
  };
  
 
@@ -129,14 +140,12 @@ function addToHistory(message){
     if(history.length >= 100)
         history.pop();
     history.push(message)
-
+5   
 }
 
 
-/*** Gestion des clients et des connexions ***/
-var clients = {};       // id -> socket
 
-let rooms =[];
+var rooms =[];
 
 // Quand un client se connecte, on le note dans la console
 io.on('connection', function (socket) {
@@ -156,16 +165,24 @@ io.on('connection', function (socket) {
         if(key!=null)
             {
                 //if the key is provided we check if we can find the room
-                room = rooms.find(room => room.getKey()==key);
-                console.log(room)
+                console.log("TYPE" + Array.isArray(rooms))
+                rooms.forEach
+                (
+                    r=>{
+                        if(r.roomKey==key)
+                            room = r;
+                    }
+                )
             }
         //creating new room 
         if(room==null){
+            console.log("IN HERWERERE")
                 var roomId =  Math.random().toString(10).substr(2, 5);      
                 room= new Room(roomId,true);
                 rooms.push(room)
             }
-            log(id)
+            log(room)
+            log(room.players)
         while (room.players[id]) {
             id = id + "(1)";   
         }
@@ -238,34 +255,16 @@ io.on('connection', function (socket) {
      *  Réception d'un message et transmission à tous.
      *  @param  msg     Object  le message à transférer à tous  
      */
-    socket.on("invite", function(msg) {
-        log("Message recieved");   
-        // Add the date if missing
-        msg.date = Date.now();
-        // si message privé, envoi seulement au destinataire
-       /* if (msg.to != null && clients[msg.to] !== undefined) {
-            log(" --> message privé");
-            clients[msg.to].emit("message", msg);
-            if (msg.from != msg.to) {
-                socket.emit("message", msg);
-            }
-        }
-        else {
-            log(" --> broadcast");
-            io.sockets.emit("message", msg);
-            addToHistory(msg)
-        }*/
-        if(msg.from !=null){
-            log(" --> broadcast");
+    socket.on("invite", function(players,roomId,roomKey) {
+        log("invite recieved");   
+            log(" --> Invitation is being sent");
             rooms.forEach(room => {
-                room.sendMessage(msg)
+                if(room.roomId==roomId)
+                room.sendInvitation(players,roomKey)  
             });
-            addToHistory(msg)
-         }else{
-            log("Ignoring message because the sender is null ");   
-
-         }
+           
     });
+
     /**
      *  Réception d'un message et transmission à tous.
      *  @param  msg     Object  le message à transférer à tous  

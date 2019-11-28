@@ -272,13 +272,13 @@ input[type=radio]:checked + div {
     display: contents;
 }
 
-#selectGuest input {
+.selectBox input {
     padding: 3px;
     font-size: 80%;
     margin: 10px;
 }
 
-#selectGuest {
+.selectBox {
     width: 400px;
     height: 80%;
     transform: translate(-50%, -50%);
@@ -290,24 +290,24 @@ input[type=radio]:checked + div {
     box-shadow: 10px 10px 10px #000;
     border-radius: 5px;
 }
-#selectGuest h2 {
+.selectBox h2 {
     margin: 10px;
     width: 100%;
     position: static;
 }
-#selectGuest #btnFermer {
+.selectBox #selectGuestbtnFermer,#selectRoombtnFermer {
     position: absolute;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-#selectGuest #selectGuestResult {
+.selectBox .selectBoxResult {
     height: calc(100% - 80px);
     background-color: white;
     overflow: scroll;
 }
-#selectGuest #selectGuestResult {
+.selectBox .selectBoxResult {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -315,7 +315,7 @@ input[type=radio]:checked + div {
     justify-content: space-evenly;
 }
 
-#selectGuestResult {
+.selectBoxResult {
     width: 98%;
     height: auto;
     cursor: pointer;
