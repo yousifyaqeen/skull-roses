@@ -395,7 +395,7 @@ socket.on("messageGame", function(id,msg) {
 
 socket.on("Gameliste", function(roomId,msg) {
     console.log(msg)
-    if(keys[roomId]!=null){
+    /*if(keys[roomId]!=null){
            var checkIsReady =  setInterval(function(main){
                 var main = document.querySelector("div[data-id='"+roomId+"'] div[id='thingsAside']")
                 if(main!=null){
@@ -407,7 +407,7 @@ socket.on("Gameliste", function(roomId,msg) {
                     });
                     clearInterval(checkIsReady)
                 }
-            }, 500);
+            }, 500);*/
 }
 
 });
