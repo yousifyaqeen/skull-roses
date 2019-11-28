@@ -162,17 +162,36 @@ function main(){
                 document.getElementById("bcImage").style.display ="none";
             })
 
+        document.getElementById("selectGuestbtnFermer").addEventListener(
+            "click",function(){
+                document.getElementById("selectGuest").style.display ="none";
+            })
+
         document.getElementById("btnEnvoyer")
             .addEventListener("click",function(){
                     var message = document.getElementById("monMessage").value
                     sendMessage(message)
 
             });
-            document.getElementById("btnHeberger")
+
+        document.getElementById("btnHeberger")
             .addEventListener("click",function(){
-                     socket.emit("join",username,null)
+                socket.on("liste", function(msg) {
+                    document.getElementById("selectGuest").style.display="block"
+                    var main = document.getElementById("selectGuestResult")
+                    main.innerHTML = ""
+                    console.log(msg);
+                    msg.forEach(element => {
+                        console.log("lala");
+                        var childNode = document.createElement("input")
+                        childNode.type = "checkbox"
+                        childNode.value = element
+                        main.appendChild(childNode)
+                    });
+                });
+                socket.emit("join",username,null)
             });
-           
+
 }
 socket.on("bienvenue", function(msg) {
     if(!connected){
@@ -231,9 +250,9 @@ socket.on("liste", function(msg) {
 socket.on("getKey",function(key,id){
     keys[id] = key;
     console.log("my fucking key is  " + key);
-    
+
     var createGame = document.getElementById("tabs")
-                  
+
     var game =document.createElement("div")
     game.class = "content"
     game.dataset.id = id
@@ -242,9 +261,9 @@ socket.on("getKey",function(key,id){
     game.style.display ="none"
     tabs.push(game);
     document.getElementById("content").appendChild(game)
-    
+
      $(function(){
-         $("[data-game_name='skullandroses']").load("/game/gameServer.html"); 
+         $("[data-game_name='skullandroses']").load("/game/gameServer.html");
        });
        console.log("HEllo")
        var button = document.createElement("input");
@@ -252,7 +271,7 @@ socket.on("getKey",function(key,id){
        button.value = "Skull & Roses"
        button.classList = "btn btn-primary btn-lg"
        button.id = "btnSkullAndRoses"
-       button.dataset.index = id;  
+       button.dataset.index = id;
        button.addEventListener("click",function(){
            tabs.forEach(t => {
                t.style.display = "none"
@@ -260,7 +279,7 @@ socket.on("getKey",function(key,id){
            game.style.display = "contents"
            currentlyPlaying=button.dataset.index;
            console.log("MY fucking id2 :  "+ id)
-       })               
+       })
        createGame.appendChild(button);
 
 });
@@ -278,7 +297,7 @@ socket.on("messageGame", function(id,msg) {
             childNode.setAttribute("class" , "moi")
         }
         childNode.innerText +=msg.from
-    }else{  
+    }else{
         childNode.setAttribute("class" , "system")
         childNode.innerText += "[admin]"
     }
@@ -292,7 +311,7 @@ socket.on("messageGame", function(id,msg) {
         childNode.innerHTML += msg.text
     }else
         childNode.innerText +=msg.text
-    
+
     document.querySelector("div[data-id='"+id+"'] main").appendChild(childNode)
 
 });
@@ -303,7 +322,7 @@ function initiliseGames(){
     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnImage")
     .addEventListener("click",function(){
         document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="block";
-    }); 
+    });
 
     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnRechercher")
     .addEventListener("click",function(){
@@ -313,8 +332,8 @@ function initiliseGames(){
             console.log("searching for " + searchText)
             getSearchGiphyRequest(searchText);
          }
-    }); 
-    
+    });
+
     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnFermer").addEventListener(
         "click",function(){
             document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="none";
@@ -337,9 +356,9 @@ function initiliseGames(){
         .addEventListener("click",function(){
                 var message = document.querySelector("div[data-id='"+currentlyPlaying+"'] #monMessage").value
                 sendMessage(message)
-            
+
         });
-        
+
 
 
 }

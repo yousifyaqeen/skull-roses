@@ -32,6 +32,7 @@
         <div id="tabs">
             <input type="button" value="Chat Général" class="btn btn-primary btn-lg" id="btnGeneralChat">
         </div>
+
         <div id="generalchat" class="content">
             <div id="thingsAside">
                 <h2>Client connectés</h2>
@@ -45,14 +46,16 @@
             </div>
             <main>
             </main>
-            </div>
-            <footer>
-                    <input type="text" id="monMessage">
-                    <input type="button" value="Envoyer" id="btnEnvoyer">
-                    <input type="button" value="Image" id="btnImage">
-                    <input type="button" value="Quitter" id="btnQuitter">
-                </footer>
-    <div id="bcImage" style="display: none;">
+        </div>
+
+        <footer>
+            <input type="text" id="monMessage">
+            <input type="button" value="Envoyer" id="btnEnvoyer">
+            <input type="button" value="Image" id="btnImage">
+            <input type="button" value="Quitter" id="btnQuitter">
+        </footer>
+
+        <div id="bcImage" style="display: none;">
             <header>
                 <input type="text" id="recherche" placeholder="Tapez ici le texte de votre recherche">
                 <input type="button" value="Recherche" id="btnRechercher">
@@ -60,9 +63,19 @@
             <div id="bcResults"></div>
             <footer><input type="button" value="Fermer" id="btnFermer"></footer>
         </div>
+
+        <div id="selectGuest" style="display: none;">
+            <header>
+                <h2>Sélectionnez un maximum de 5 invités</h2>
+                <!-- <input type="text" id="recherche" placeholder="Tapez ici le texte de votre recherche"> -->
+                <!-- <input type="button" value="Recherche" id="btnRechercher"> -->
+            </header>
+            <div id="selectGuestResult"></div>
+            <footer><input type="button" value="Fermer" id="selectGuestbtnFermer"></footer>
+        </div>
     </div>
 
-    
+
 </body>
 
 </html>
