@@ -5,6 +5,7 @@ var max_search_results = 32;
 var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
 var currentlyPlaying = -1;
 var tabs = []
+var keys = []
 /**
  * search for gifs using the giphy API
  * @param   {JSON String} response [the parsed response]
@@ -77,10 +78,18 @@ function sendMessage(text){
         text = text.replace(key,emojis[key])
     });
     if(to==null){
-        socket.emit("message", {from : username, to : null,text : text,date : Date.now()});
+        if(currentlyPlaying==-1)
+            socket.emit("message", {from : username, to : null,text : text,date : Date.now()});
+        else
+            socket.emit("messageSkullAndRoses", {from : username, roomKey:keys[currentlyPlaying] ,to : null,text : text,date : Date.now()});
+
     }
     else{
-        socket.emit("message", {from : username, to :to[0].substr(1),text : text.substr(to[0].length+1),date : Date.now()});
+        if(currentlyPlaying==-1)
+         socket.emit("message", {from : username, to :to[0].substr(1),text : text.substr(to[0].length+1),date : Date.now()});
+        else
+         socket.emit("messageSkullAndRoses", {from : username,roomkey:keys[currentlyPlaying], to :to[0].substr(1),text : text.substr(to[0].length+1),date : Date.now()});
+
     }
     document.getElementById("monMessage").value=""
 
@@ -124,8 +133,10 @@ function main(){
             t.style.display = "none"
         });
         document.getElementById("generalchat").style.display = "contents"
-    
+        currentlyPlaying=-1;
     })
+
+
     document.getElementById("btnConnecter")
         .addEventListener("click",function(){
            connect();
@@ -159,42 +170,9 @@ function main(){
             });
             document.getElementById("btnHeberger")
             .addEventListener("click",function(){
-                    var createGame = document.getElementById("tabs")
-                  
-                    var game =document.createElement("div")
-                    game.class = "content"
-                    game.dataset.id = currentlyPlaying++
-                    game.dataset.game_name = "skullandroses"
-
-                    game.style.display ="none"
-                    tabs.push(game);
-                    document.getElementById("content").appendChild(game)
-                    
-                     $(function(){
-                         $("[data-game_name='skullandroses']").load("/game/gameServer.html"); 
-                       });
-
-
-                       var button = document.createElement("input");
-                       button.type = "button"
-                       button.value = "Skull & Roses"
-                       button.classList = "btn btn-primary btn-lg"
-                       button.id = "btnSkullAndRoses"
-                       button.dataset.index = currentlyPlaying;  
-                       button.addEventListener("click",function(){
-                           tabs.forEach(t => {
-                               t.style.display = "none"
-                           });
-                           game.style.display = "contents"
-                       })               
-                       createGame.appendChild(button);
-                       console.log(currentlyPlaying)
-                        if(currentlyPlaying==0){
-                           var obj =  document.createElement('script')
-                           obj.src = "/game/js/gameServer.js"
-                        document.querySelector("head").appendChild(obj)}
+                     socket.emit("join",username,null)
             });
-
+           
 }
 socket.on("bienvenue", function(msg) {
     if(!connected){
@@ -234,42 +212,9 @@ socket.on("message", function(msg) {
     }else
         childNode.innerText +=msg.text
 
-    document.querySelector("div#content>main").appendChild(childNode)
+    document.querySelector("#generalchat main").appendChild(childNode)
 
 });
-/*
-socket.on("history", function(historyArray) {
-    historyArray.forEach( msg=>{
-        var date = new Date (msg.date);
-        var dateString = date.getHours() + ":"
-        dateString += date.getMinutes() + ":"
-        dateString += date.getSeconds()
-
-    var childNode = document.createElement("p")
-    childNode.innerText = dateString
-    childNode.innerText += " - "
-    if(msg.from!= null){
-        if(msg.from == username){
-            childNode.setAttribute("class" , "moi")
-        }
-            childNode.innerText +=msg.from
-    }else{
-        childNode.setAttribute("class" , "system")
-        childNode.innerText += "[admin]"
-    }
-
-    if(msg.to!= null){
-        childNode.innerText += "(to " + msg.to + " )"
-        childNode.setAttribute("class" , "mp")
-    }
-    childNode.innerText += " : "
-    childNode.innerText +=msg.text
-    document.querySelector("div#content>main").appendChild(childNode)
-
-});
-
-});
-*/
 
 socket.on("liste", function(msg) {
     var main = document.getElementById("asideChat")
@@ -282,3 +227,119 @@ socket.on("liste", function(msg) {
     });
 
 });
+
+socket.on("getKey",function(key,id){
+    keys[id] = key;
+    console.log("my fucking key is  " + key);
+    
+    var createGame = document.getElementById("tabs")
+                  
+    var game =document.createElement("div")
+    game.class = "content"
+    game.dataset.id = id
+    game.dataset.game_name = "skullandroses"
+
+    game.style.display ="none"
+    tabs.push(game);
+    document.getElementById("content").appendChild(game)
+    
+     $(function(){
+         $("[data-game_name='skullandroses']").load("/game/gameServer.html"); 
+       });
+       console.log("HEllo")
+       var button = document.createElement("input");
+       button.type = "button"
+       button.value = "Skull & Roses"
+       button.classList = "btn btn-primary btn-lg"
+       button.id = "btnSkullAndRoses"
+       button.dataset.index = id;  
+       button.addEventListener("click",function(){
+           tabs.forEach(t => {
+               t.style.display = "none"
+           });
+           game.style.display = "contents"
+           currentlyPlaying=button.dataset.index;
+           console.log("MY fucking id2 :  "+ id)
+       })               
+       createGame.appendChild(button);
+
+});
+//------------------------------------//
+socket.on("messageGame", function(id,msg) {
+    console.log("I got this shit")
+    var date = new Date (msg.date);
+    var dateString = date.getHours() + ":"
+    dateString += date.getMinutes() + ":"
+    dateString += date.getSeconds()
+    var childNode = document.createElement("p")
+    childNode.innerText = dateString + " - ";
+    if(msg.from!= null){
+        if(msg.from == username){
+            childNode.setAttribute("class" , "moi")
+        }
+        childNode.innerText +=msg.from
+    }else{  
+        childNode.setAttribute("class" , "system")
+        childNode.innerText += "[admin]"
+    }
+    if(msg.to != null){
+        childNode.innerText += "(to " + msg.to + " )"
+        childNode.setAttribute("class" , "mp")
+    }
+    childNode.innerText += " : "
+    var patt = /^<img[^>]+src="([^">]+)"/
+    if(msg.text.match(patt)!=null){
+        childNode.innerHTML += msg.text
+    }else
+        childNode.innerText +=msg.text
+    
+    document.querySelector("div[data-id='"+id+"'] main").appendChild(childNode)
+
+});
+
+
+function initiliseGames(){
+
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnImage")
+    .addEventListener("click",function(){
+        document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="block";
+    }); 
+
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnRechercher")
+    .addEventListener("click",function(){
+        console.log("search clicked")
+        var searchText = document.querySelector("div[data-id='"+currentlyPlaying+"'] #recherche").value
+        if(searchText!=""){
+            console.log("searching for " + searchText)
+            getSearchGiphyRequest(searchText);
+         }
+    }); 
+    
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnFermer").addEventListener(
+        "click",function(){
+            document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="none";
+        })
+
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_messages").addEventListener(
+        "click",function(){
+            document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="block";
+            document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="none";
+
+        })
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_users").addEventListener(
+        "click",function(){
+            document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="block";
+            document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="none";
+
+        })
+
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnEnvoyer")
+        .addEventListener("click",function(){
+                var message = document.querySelector("div[data-id='"+currentlyPlaying+"'] #monMessage").value
+                sendMessage(message)
+            
+        });
+        
+
+
+}

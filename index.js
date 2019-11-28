@@ -64,12 +64,15 @@ class Room {
     * @param string the player id 
     */
     addPlayer(socket,clientId){
-        this.players[clientId] =  socket;
-        this.players[clientId].join(this.roomId);
-                //Send connection notification to room
-        io.to(this.roomId).emit("message", { from: null, to: null, text: clientId + " a rejoint le jeu", date: Date.now() } );
-        this.players[clientId].emit("bienvenue", {clientId : clientId,roomKey: this.roomKey});
-        io.to(this.roomId).emit("liste", Object.keys(this.players));
+        socket.emit("getKey",this.roomKey,this.roomId)
+        io.to(this.roomId).emit("messageGame",this.roomId, { from: null, to: null,roomId:this.roomId ,text: clientId + " a rejoint le jeu", date: Date.now() } );
+
+            this.players[clientId] =  socket;
+            this.players[clientId].join(this.roomId);
+                    //Send connection notification to room
+            // todo change get key
+            this.players[clientId].emit("bienvenue", {clientId : clientId,roomKey: this.roomKey});
+            io.to(this.roomId).emit("liste", Object.keys(this.players));
     }
 
     /** add a player to the room
@@ -79,7 +82,7 @@ class Room {
     removePlayer(clientId){
         if(this.players[clientId]){
             this.players[clientId].leave(this.roomId); 
-            io.to(this.roomId).emit("message", { from: null, to: null, text: clientId + " vient de se déconnecter de l'application", date: Date.now() });
+            io.to(this.roomId).emit("message", { from: null, to: null,roomId:this.roomId, text: clientId + " vient de se déconnecter de l'application", date: Date.now() });
             delete this.players[clientId]
             io.to(this.roomId).emit("liste", Object.keys(this.players));
         }
@@ -100,9 +103,10 @@ class Room {
     }
     /** send a message to the group */
     sendMessage(msg){
+        msg.date = Date.now();
         if(this.players[msg.from]){
             if(this.roomKey==msg.roomKey){
-                io.to(this.roomId).emit("message", msg);
+                io.to(this.roomId).emit("messageGame",this.roomId, msg);
                 log("message Sent");   
             }
             else
@@ -157,13 +161,11 @@ io.on('connection', function (socket) {
                 room= new Room(roomId,true);
                 rooms.push(room)
             }
-
+            log(id)
         while (room.players[id]) {
             id = id + "(1)";   
         }
-        app.get('/skullandroses', function(req, res) {  
-            res.sendFile(__dirname + '/public/game/gameServer.html');
-        });
+
         currentID = id;
         //add player to room
         room.addPlayer(socket,id);
