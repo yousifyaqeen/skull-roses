@@ -65,14 +65,13 @@ class Room {
     */
     addPlayer(socket,clientId){
         socket.emit("getKey",this.roomKey,this.roomId)
-        io.to(this.roomId).emit("messageGame",this.roomId, { from: null, to: null,roomId:this.roomId ,text: clientId + " a rejoint le jeu", date: Date.now() } );
-
+            io.to(this.roomId).emit("messageGame",this.roomId, { from: null, to: null,roomId:this.roomId ,text: clientId + " a rejoint le jeu", date: Date.now() } );
             this.players[clientId] =  socket;
             this.players[clientId].join(this.roomId);
                     //Send connection notification to room
             // todo change get key
             this.players[clientId].emit("bienvenue", {clientId : clientId,roomKey: this.roomKey});
-            io.to(this.roomId).emit("liste", Object.keys(this.players));
+            io.to(this.roomId).emit("Gameliste", this.roomId,Object.keys(this.players));
     }
 
     /** add a player to the room
@@ -84,7 +83,7 @@ class Room {
             this.players[clientId].leave(this.roomId); 
             io.to(this.roomId).emit("message", { from: null, to: null,roomId:this.roomId, text: clientId + " vient de se déconnecter de l'application", date: Date.now() });
             delete this.players[clientId]
-            io.to(this.roomId).emit("liste", Object.keys(this.players));
+            io.to(this.roomId).emit("Gameliste", this.roomId,Object.keys(this.players));
         }
 
     }
@@ -106,8 +105,13 @@ class Room {
         msg.date = Date.now();
         if(this.players[msg.from]){
             if(this.roomKey==msg.roomKey){
-                io.to(this.roomId).emit("messageGame",this.roomId, msg);
-                log("message Sent");   
+                if(msg.to==null){
+                    io.to(this.roomId).emit("messageGame",this.roomId, msg);
+                    log("message Sent");   
+                }else{
+                    if(this.players[msg.to]!=null)
+                        this.players[msg.to].emit("messageGame",this.roomId, msg);
+                }
             }
             else
                 log("the sender has the wrong key");   
@@ -172,8 +176,6 @@ io.on('connection', function (socket) {
         //log to server terminal
         log("new User connected : " + id + " to Room " + room.getId() + " key " + room.getKey());
         //add message to server history
-        addToHistory({ from: null, to: null, text: id + " a rejoint la discussion", date: Date.now() })
-        // send the list of all connected users
     });
 
      /**
@@ -192,6 +194,7 @@ io.on('connection', function (socket) {
         socket.emit("bienvenue", id);
         // envoi aux autres clients 
         socket.broadcast.emit("message", { from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() } );
+
         addToHistory({ from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() })
         // envoi de la nouvelle liste à tous les clients c{ from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() }onnectés 
         io.sockets.emit("liste", Object.keys(clients));

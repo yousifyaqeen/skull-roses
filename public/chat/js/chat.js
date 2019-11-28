@@ -120,6 +120,7 @@ window.onload = main;
 
 function main(){
     tabs.push(document.getElementById("generalchat"))
+
     document.getElementById("btnQuitter").addEventListener("click",function(){
         socket.emit("logout");
         socket.close();
@@ -170,9 +171,15 @@ function main(){
             });
             document.getElementById("btnHeberger")
             .addEventListener("click",function(){
-                     socket.emit("join",username,null)
+                joinGame(null)
             });
+            
            
+}
+
+function joinGame(key){
+    socket.emit("join",username,key)
+
 }
 socket.on("bienvenue", function(msg) {
     if(!connected){
@@ -216,6 +223,29 @@ socket.on("message", function(msg) {
 
 });
 
+socket.on("invite", function(msg) {
+    var date = new Date (msg.date);
+    var dateString = date.getHours() + ":"
+    dateString += date.getMinutes() + ":"
+    dateString += date.getSeconds()
+
+    var childNode = document.createElement("p")
+    childNode.innerText = dateString + " - ";
+    if(msg.from == null)
+        return;
+    childNode.innerText += msg.from
+    childNode.innerText += " Invited you to play " + msg.game_name;
+    var invitationUrl = document.createElement("a")
+    .innerText = "Click to Join"
+    .addEventListener("click",function(){
+        joinGame(msg.key)
+    })
+
+    childNode.appendChild(invitationUrl);
+    document.querySelector("#generalchat main").appendChild(childNode)
+
+});
+
 socket.on("liste", function(msg) {
     var main = document.getElementById("asideChat")
     main.innerHTML = ""
@@ -223,10 +253,42 @@ socket.on("liste", function(msg) {
         var childNode = document.createElement("p")
         childNode.innerText = element
         main.appendChild(childNode)
-
     });
+});
+
+//------------------------------------//
+socket.on("messageGame", function(id,msg) {
+    console.log("I got this shit")
+    var date = new Date (msg.date);
+    var dateString = date.getHours() + ":"
+    dateString += date.getMinutes() + ":"
+    dateString += date.getSeconds()
+    var childNode = document.createElement("p")
+    childNode.innerText = dateString + " - ";
+    if(msg.from!= null){
+        if(msg.from == username){
+            childNode.setAttribute("class" , "moi")
+        }
+        childNode.innerText +=msg.from
+    }else{  
+        childNode.setAttribute("class" , "system")
+        childNode.innerText += "[admin]"
+    }
+    if(msg.to != null){
+        childNode.innerText += "(to " + msg.to + " )"
+        childNode.setAttribute("class" , "mp")
+    }
+    childNode.innerText += " : "
+    var patt = /^<img[^>]+src="([^">]+)"/
+    if(msg.text.match(patt)!=null){
+        childNode.innerHTML += msg.text
+    }else
+        childNode.innerText +=msg.text
+    
+    document.querySelector("div[data-id='"+id+"'] div[id='thingsAside']").appendChild(childNode)
 
 });
+
 
 socket.on("getKey",function(key,id){
     keys[id] = key;
@@ -264,41 +326,26 @@ socket.on("getKey",function(key,id){
        createGame.appendChild(button);
 
 });
-//------------------------------------//
-socket.on("messageGame", function(id,msg) {
-    console.log("I got this shit")
-    var date = new Date (msg.date);
-    var dateString = date.getHours() + ":"
-    dateString += date.getMinutes() + ":"
-    dateString += date.getSeconds()
-    var childNode = document.createElement("p")
-    childNode.innerText = dateString + " - ";
-    if(msg.from!= null){
-        if(msg.from == username){
-            childNode.setAttribute("class" , "moi")
-        }
-        childNode.innerText +=msg.from
-    }else{  
-        childNode.setAttribute("class" , "system")
-        childNode.innerText += "[admin]"
-    }
-    if(msg.to != null){
-        childNode.innerText += "(to " + msg.to + " )"
-        childNode.setAttribute("class" , "mp")
-    }
-    childNode.innerText += " : "
-    var patt = /^<img[^>]+src="([^">]+)"/
-    if(msg.text.match(patt)!=null){
-        childNode.innerHTML += msg.text
-    }else
-        childNode.innerText +=msg.text
-    
-    document.querySelector("div[data-id='"+id+"'] main").appendChild(childNode)
+/*
+socket.on("Gameliste", function(roomId,msg) {
+    if(keys[roomId]!=null){
+           var checkIsReady =  setInterval(function(main){ 
+                var main = document.querySelector("div[data-id='"+roomId+"'] div[id='thingsAside']")
+                if(main!=null){
+                main.innerHTML = ""
+                msg.forEach(element => {
+                    var childNode = document.createElement("p")
+                    childNode.innerText = element
+                    main.appendChild(childNode)
+                    });
+                    clearInterval(checkIsReady)
+                }
+            }, 500);
+}
 
 });
-
-
-function initiliseGames(){
+*/
+function initilizeGames(){
 
     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnImage")
     .addEventListener("click",function(){

@@ -77,6 +77,21 @@ body > div {
     vertical-align: text-top;
 }
 
+#thingsAside .mp {
+    color: darkblue;
+}
+#thingsAside  .moi {
+    color: green;
+}
+#thingsAside  .system {
+    color: red;
+}
+#thingsAside  img {
+    max-width: 50%;
+    vertical-align: text-top;
+}
+
+
 /** Pied de zone de chat */
 .content footer {
     position: absolute;
