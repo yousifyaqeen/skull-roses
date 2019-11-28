@@ -6,6 +6,7 @@ var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
 var currentlyPlaying = -1;
 var tabs = []
 var keys = []
+var playersList = []
 /**
  * search for gifs using the giphy API
  * @param   {JSON String} response [the parsed response]
@@ -178,20 +179,17 @@ function main(){
         document.getElementById("btnHeberger")
             .addEventListener("click",function(){
 
-                socket.on("liste", function(msg) {
-                    document.getElementById("selectGuest").style.display="block"
+              //  socket.on("liste", function(msg) {
+                   document.getElementById("selectGuest").style.display="block"
                     var main = document.getElementById("selectGuestResult")
                     main.innerHTML = ""
-                    console.log(msg);
-                    msg.forEach(element => {
+                    playersList.forEach(element => {
                         console.log("lala");
                         var childNode = document.createElement("input")
                         childNode.type = "checkbox"
                         childNode.value = element
                         main.appendChild(childNode)
                     });
-                });
-                socket.emit("join",username,null)
                 joinGame(null)
             });
 
@@ -269,6 +267,7 @@ socket.on("invite", function(msg) {
 socket.on("liste", function(msg) {
     var main = document.getElementById("asideChat")
     main.innerHTML = ""
+    playersList = msg
     msg.forEach(element => {
         var childNode = document.createElement("p")
         childNode.innerText = element
@@ -377,6 +376,7 @@ socket.on("messageGame", function(id,msg) {
         childNode.innerText +=msg.text
 
     document.querySelector("div[data-id='"+id+"'] main").appendChild(childNode)
+});
 
 /*
 socket.on("Gameliste", function(roomId,msg) {
