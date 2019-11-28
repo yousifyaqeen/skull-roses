@@ -178,19 +178,28 @@ function main(){
 
         document.getElementById("btnHeberger")
             .addEventListener("click",function(){
+                joinGame(null)
+            });
 
-              //  socket.on("liste", function(msg) {
+        document.getElementById("btnInviter")
+            .addEventListener("click",function(){
+
                    document.getElementById("selectGuest").style.display="block"
                     var main = document.getElementById("selectGuestResult")
                     main.innerHTML = ""
                     playersList.forEach(element => {
-                        console.log("lala");
-                        var childNode = document.createElement("input")
-                        childNode.type = "checkbox"
-                        childNode.value = element
+                        var childNode = document.createElement("div")
+                        var input = document.createElement("input")
+                        input.type = "checkbox"
+                        input.id = element
+                        input.name = element
+                        var label = document.createElement("label")
+                        label.for = element
+                        label.innerHTML = element
+                        childNode.appendChild(input)
+                        childNode.appendChild(label)
                         main.appendChild(childNode)
                     });
-                joinGame(null)
             });
 
 }
