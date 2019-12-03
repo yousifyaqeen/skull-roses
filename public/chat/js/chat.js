@@ -6,7 +6,8 @@ var API_KEY = "0X5obvHJHTxBVi92jfblPqrFbwtf1xig";
 var currentlyPlaying = -1;
 var tabs = []
 var keys = []
-var clinetListGeneral = [] // players in the general chat
+var clientListGeneral = [] // players in the general chat
+
 //todo comment
 class Room{
     roomKey
@@ -206,7 +207,9 @@ function main(){
         document.getElementById("selectRoom").style.display ="block"
         var roomList = document.getElementById("selectRoomResult")
         roomList.innerHTML =""
+        console.log("HOLAAAAAAAAAAAA");
         rooms.forEach(room => {
+            console.log("InFORR");
             var childNode = document.createElement("div")
                     var input = document.createElement("input")
                     input.type = "checkbox"
@@ -235,10 +238,10 @@ function main(){
             var main = document.getElementById("selectGuestResult")
             main.innerHTML = ""
             //correct client
-            clinetListGeneral.forEach(element => {
+            clientListGeneral.forEach(element => {
                 //console.log(rooms[selectedRoomId]);
                 //console.log(element)
-                if(rooms[selectedRoomId].playerList[element]==null){
+                if(rooms[selectedRoomId].playerList[element]==null && username!=element){
                     var childNode = document.createElement("div")
                     var input = document.createElement("input")
                     input.type = "checkbox"
@@ -272,8 +275,6 @@ function main(){
 
                 invite(playerarray,selectedRoomId);
              })
-
-
         });
     });
 
@@ -358,7 +359,7 @@ socket.on("invitation", function(msg) {
 socket.on("liste", function(msg) {
     var main = document.getElementById("asideChat")
     main.innerHTML = ""
-    clinetListGeneral = msg
+    clientListGeneral = msg
     msg.forEach(element => {
         var childNode = document.createElement("p")
         childNode.innerText = element
@@ -440,7 +441,16 @@ socket.on("getKey",function(key,id){
     })
     createGame.appendChild(button);
 
-    setTimeout(function(){document.querySelector("div[data-id='"+id+"'] div[id='thingsAside'] h2").innerText = "Local Chat"}, 100);
+    setTimeout(function(){
+        document.querySelector("div[data-id='"+id+"'] div[id='thingsAside'] h2").innerText = "Local Chat"
+        var buttonStart = document.createElement("input");
+        buttonStart.type = "button"
+        buttonStart.value = "Start game"
+        buttonStart.classList = "btn btn-primary btn-lg"
+        buttonStart.id = "btnStart"
+        buttonStart.dataset.index = id;
+        document.querySelector("div[data-id='"+id+"'] div[id='thingsAside']").appendChild(buttonStart);
+    }, 100);
 });
 
 // //------------------------------------//
@@ -479,22 +489,20 @@ socket.on("getKey",function(key,id){
 socket.on("Gameliste", function(roomId,players) {
     console.log(players)
     if(rooms[roomId]!=null){
-          /* var checkIsReady =  setInterval(function(main){
-                var main = document.querySelector("div[data-id='"+roomId+"'] div[id='thingsAside']")
-                if(main!=null){
-                main.innerHTML = ""
-                msg.forEach(element => {
-                    var childNode = document.createElement("p")
-                    childNode.innerText = element
-                    main.appendChild(childNode)
-                    });
-                    clearInterval(checkIsReady)
-                }
-            }, 500);*/
-            rooms[roomId].playerList = players
-
-}
-
+      /* var checkIsReady =  setInterval(function(main){
+            var main = document.querySelector("div[data-id='"+roomId+"'] div[id='thingsAside']")
+            if(main!=null){
+            main.innerHTML = ""
+            msg.forEach(element => {
+                var childNode = document.createElement("p")
+                childNode.innerText = element
+                main.appendChild(childNode)
+                });
+                clearInterval(checkIsReady)
+            }
+        }, 500);*/
+        rooms[roomId].playerList = players
+    }
 });
 
 function initilizeGames(){
@@ -539,6 +547,153 @@ function initilizeGames(){
 
     });
 
+    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnStart")
+    .addEventListener("click",function(){
+        var selectedRoomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
+        startGame(selectedRoomId);
+    });
+}
 
+function startGame(roomId){
+    players[];
+    rooms[roomId].playerList.forEach(p => { //for each player in the room
+        players[p] = new Player(p, "faction");
+    });
+
+
+}
+
+
+
+// ---------------------------- GAME -----
+function arrayRemove(arr, toRemove) {
+    return arr.filter(elem=>elem!=toRemove);
+}
+
+ /**
+ * Shuffles array in place. ES6 version
+ * source :https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+ * @param {Array} a items An array containing the items.
+ */
+
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+class Hand{
+    cards = [];//1 skull : 0 roses
+    blocked=[];
+    constructor(){
+        this.cards = [{id:0,type:0},{id:1,type:0},{id:2,type:0},{id:3,type:0}]
+        this.cards[Math.floor(Math.random() * 4)].type=1;
+       // shuffle(this.cards)
+
+    }
+
+    reveal(nb){
+        if(nb<=0)
+            return;
+        var revealed =[]
+        var currentIndex = 0
+        while(currentIndex<nb){
+            revealed = this.blocked[currentIndex];
+            currentIndex+=1
+        }
+        return revealed
+    }
+
+    block(index){
+        if (this.cards[index] !=null){
+            this.blocked.push(this.cards[index])
+            this.cards[index] = null;
+            return this.blocked[this.blocked.length-1];
+        }
+    }
+
+    unblock(){
+        this.cards.forEach(card => {
+            if(card==null){
+                card = this.blocked.pop();
+            }
+        });
+
+        if(this.blocked.length>0){
+            console.log("Error Unblock");
+        }
+    }
+
+    removeFromHand(index){
+        if(index<this.cards.length)
+            this.cards.splice(index, 1);
+    }
+
+}
+
+class Player  {
+    name ="";
+    faction;
+    hand;
+    points;
+    bet;
+    constructor(name,faction){
+        this.name=name;
+        this.hand = new Hand();
+        this.faction=faction;
+    }
+
+    pushCard(index){
+        return this.hand.block(index);
+    }
+    raise(nb){
+        bet+=nb;
+    }
+
+    fold(){
+        bet=0;
+    }
+    reveal(nb){
+        this.hand.reveal(nb);
+    }
+    restart(){
+        this.bet =0;
+        this.hand.unblock();
+    }
+    removeCard(index){
+        return this.hand.removeFromHand(index);
+    }
+}
+
+class gameManager{
+    players = [];
+
+    currentPlayer=0;
+    constructor(player){
+       this.players.push(player);
+    }
+
+    addPlayer(player){
+        if(this.players.length<6){
+            this.players.push(player);
+        }
+    }
+
+    startRoundinit(){
+        this.players.forEach(pl=>{
+
+            console.log(pl.pushCard(0));
+        })
+    }
+
+    startRound(playerIndex){
+        var tmp = [];
+        tmp = this.players.splice(playerIndex);
+        tmp.concat(this.players.splice(0,playerIndex-1));
+        return tmp;
+
+    }
 
 }
