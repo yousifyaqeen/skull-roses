@@ -165,7 +165,6 @@ io.on('connection', function (socket) {
         if(key!=null)
             {
                 //if the key is provided we check if we can find the room
-                console.log("TYPE" + Array.isArray(rooms))
                 rooms.forEach
                 (
                     r=>{
@@ -176,7 +175,6 @@ io.on('connection', function (socket) {
             }
         //creating new room 
         if(room==null){
-            console.log("IN HERWERERE")
                 var roomId =  Math.random().toString(10).substr(2, 5);      
                 room= new Room(roomId,true);
                 rooms.push(room)
