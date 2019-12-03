@@ -59,7 +59,7 @@ function displaySearchResults(response) {
         container.appendChild(img)
     });
 }
-
+//send a message to the server
 function sendMessage(text) {
     if (username == "" || username == null) {
         return
@@ -110,7 +110,8 @@ function sendMessage(text) {
     document.getElementById("monMessage").value = ""
 
 }
-//connect to server
+
+//connect to the server
 function connect() {
     socket.open();
     if (!connected) {
@@ -218,7 +219,7 @@ function main() {
                 label.appendChild(input)
                 roomList.appendChild(label)
             })
-         
+
             document.getElementById("selectRoombtnSelect").addEventListener("click", function () {
                 //todo fix multiple selections
                 var selectedRoomId = document.querySelector('#selectRoom input[type=radio][name=selectRoom]:checked').id
@@ -227,26 +228,21 @@ function main() {
                 document.getElementById("selectGuest").style.display = "block"
                 var main = document.getElementById("selectGuestResult")
                 main.innerHTML = ""
-                //correct client 
-                if(clientListGeneral!=null)
+
                 clientListGeneral.forEach(element => {
-                    //console.log(rooms[selectedRoomId]);
-                    //console.log(element)
-                    if (rooms[selectedRoomId].playerList[element]==null && username!=element) {
-                        var childNode = document.createElement("div")
+                    if (rooms[selectedRoomId].playerList[element] == null && username != element) {
                         var input = document.createElement("input")
                         input.type = "checkbox"
                         input.id = element
-                        input.name = element
+                        input.name = "selectClient"
                         var label = document.createElement("label")
                         label.for = element
                         label.innerHTML = element
-                        childNode.appendChild(input)
-                        childNode.appendChild(label)
-                        main.appendChild(childNode)
+                        label.appendChild(input)
+                        main.appendChild(label)
                     }
                 });
-                $('#selectGuest input[type=checkbox]').change(function (e) {
+                $('#selectGuest input[name=selectClient]').change(function (e) {
                     if ($('#selectGuest input[type=checkbox]:checked').length > 5) {
                         $(this).prop('checked', false)
                     }
@@ -262,7 +258,7 @@ function main() {
                     else
                         playerarray.push(guestList.id)
 
-                        sendInvitation(playerarray, selectedRoomId);
+                    sendInvitation(playerarray, selectedRoomId);
                 })
             });
         });
@@ -404,7 +400,7 @@ socket.on("getKey", function (key, id) {
     game.dataset.game_id = id
     game.dataset.game_name = "skullandroses"
 
-    game.style.display ="none"
+    game.style.display = "none"
 
     var div = document.createElement("div");
     div.id = "thingsAside";
@@ -416,12 +412,11 @@ socket.on("getKey", function (key, id) {
     buttonStart.classList = "btn btn-primary btn-lg"
     buttonStart.id = "btnStart"
     buttonStart.dataset.index = id;
-    // document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnStart")
     buttonStart
-    .addEventListener("click",function(){
-        // var roomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
-        startGame();
-    });
+        .addEventListener("click", function () {
+            // var roomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
+            startGame();
+        });
 
     div.appendChild(title)
     div.appendChild(buttonStart)
@@ -439,19 +434,19 @@ socket.on("getKey", function (key, id) {
 
     var button = document.createElement("input");
     button.type = "button"
-    button.value = "S&R | "+ id
+    button.value = "S&R | " + id
     button.classList = "btn btn-primary btn-lg"
     button.id = "btnSkullAndRoses"
     button.dataset.index = id;
 
-    button.addEventListener("click",function(){
+    button.addEventListener("click", function () {
         tabs.forEach(t => {
             t.style.display = "none"
         });
 
         game.style.display = "contents"
-        currentlyPlaying=button.dataset.index;
-        console.log("MY fucking id2 :  "+ id)
+        currentlyPlaying = button.dataset.index;
+        console.log("MY fucking id2 :  " + id)
     })
     createGame.appendChild(button);
 
@@ -475,16 +470,16 @@ socket.on("Gameliste", function (roomId, players) {
         rooms[roomId].playerList = players
 
     }
-  
+
 });
 
 
 
-function startGame(){
+function startGame() {
     gm = new gameManager(rooms[currentlyPlaying].playerList);
     console.log("Yolooooo");
-    $(function(){
-        $("[data-id='"+currentlyPlaying+"'] main").load("/chat/html/gameDesign.html");
+    $(function () {
+        $("[data-game_id='" + currentlyPlaying + "'] main").load("/chat/html/gameDesign.html");
     });
 
     gm.startRoundinit();
@@ -492,53 +487,13 @@ function startGame(){
 
 // ---------------------------- GAME -----
 function arrayRemove(arr, toRemove) {
-    return arr.filter(elem=>elem!=toRemove);
+    return arr.filter(elem => elem != toRemove);
 }
-function initilizeGames() {
-
-    document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #btnImage")
-        .addEventListener("click", function () {
-            document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #bcImage").style.display = "block";
-        });
-
-    document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #btnRechercher")
-        .addEventListener("click", function () {
-            console.log("search clicked")
-            var searchText = document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #recherche").value
-            if (searchText != "") {
-                console.log("searching for " + searchText)
-                getSearchGiphyRequest(searchText);
-            }
-        });
-
-    document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #btnFermer").addEventListener(
-        "click", function () {
-            document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #bcImage").style.display = "none";
-        })
-
-    document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #btn_messages").addEventListener(
-        "click", function () {
-            document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #div_messages").style.display = "block";
-            document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #div_users").style.display = "none";
-
-        })
-    document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #btn_users").addEventListener(
-        "click", function () {
-            document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #div_users").style.display = "block";
-            document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #div_messages").style.display = "none";
-
-            document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #btnEnvoyer")
-            .addEventListener("click", function () {
-                var message = document.querySelector("div[data-game_id='" + currentlyPlaying + "'] #monMessage").value
-                sendMessage(message)
-            })
-        })
-    }
- /**
- * Shuffles array in place. ES6 version
- * source :https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
- * @param {Array} a items An array containing the items.
- */
+/**
+* Shuffles array in place. ES6 version
+* source :https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+* @param {Array} a items An array containing the items.
+*/
 
 function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
@@ -548,116 +503,116 @@ function shuffle(a) {
     return a;
 }
 
-class Hand{
+class Hand {
     cards = [];//1 skull : 0 roses
-    blocked=[];
-    constructor(){
-        this.cards = [{id:0,type:0},{id:1,type:0},{id:2,type:0},{id:3,type:0}]
-        this.cards[Math.floor(Math.random() * 4)].type=1;
-       // shuffle(this.cards)
+    blocked = [];
+    constructor() {
+        this.cards = [{ id: 0, type: 0 }, { id: 1, type: 0 }, { id: 2, type: 0 }, { id: 3, type: 0 }]
+        this.cards[Math.floor(Math.random() * 4)].type = 1;
+        // shuffle(this.cards)
 
     }
 
-    reveal(nb){
-        if(nb<=0)
+    reveal(nb) {
+        if (nb <= 0)
             return;
-        var revealed =[]
+        var revealed = []
         var currentIndex = 0
-        while(currentIndex<nb){
+        while (currentIndex < nb) {
             revealed = this.blocked[currentIndex];
-            currentIndex+=1
+            currentIndex += 1
         }
         return revealed
     }
 
-    block(index){
-        if (this.cards[index] !=null){
+    block(index) {
+        if (this.cards[index] != null) {
             this.blocked.push(this.cards[index])
             this.cards[index] = null;
-            return this.blocked[this.blocked.length-1];
+            return this.blocked[this.blocked.length - 1];
         }
     }
 
-    unblock(){
+    unblock() {
         this.cards.forEach(card => {
-            if(card==null){
+            if (card == null) {
                 card = this.blocked.pop();
             }
         });
 
-        if(this.blocked.length>0){
+        if (this.blocked.length > 0) {
             console.log("Error Unblock");
         }
     }
 
-    removeFromHand(index){
-        if(index<this.cards.length)
+    removeFromHand(index) {
+        if (index < this.cards.length)
             this.cards.splice(index, 1);
     }
 
 }
 
-class Player  {
-    name ="";
+class Player {
+    name = "";
     faction;
     hand;
     points;
     bet;
-    constructor(name,faction){
-        this.name=name;
+    constructor(name, faction) {
+        this.name = name;
         this.hand = new Hand();
-        this.faction=faction;
+        this.faction = faction;
     }
 
-    pushCard(index){
+    pushCard(index) {
         return this.hand.block(index);
     }
-    raise(nb){
-        bet+=nb;
+    raise(nb) {
+        bet += nb;
     }
 
-    fold(){
-        bet=0;
+    fold() {
+        bet = 0;
     }
-    reveal(nb){
+    reveal(nb) {
         this.hand.reveal(nb);
     }
-    restart(){
-        this.bet =0;
+    restart() {
+        this.bet = 0;
         this.hand.unblock();
     }
-    removeCard(index){
+    removeCard(index) {
         return this.hand.removeFromHand(index);
     }
 }
 
-class gameManager{
+class gameManager {
     players = [];
 
-    currentPlayer=0;
-    constructor(player){
+    currentPlayer = 0;
+    constructor(player) {
         player.forEach(p => {
             var newP = new Player(p, "amazons");
             this.addPlayer(newP);
         })
     }
 
-    addPlayer(player){
-        if(this.players.length<6){
+    addPlayer(player) {
+        if (this.players.length < 6) {
             this.players.push(player);
         }
     }
 
-    startRoundinit(){
-        this.players.forEach(pl=>{
+    startRoundinit() {
+        this.players.forEach(pl => {
             console.log(pl.pushCard(0));
         })
     }
 
-    startRound(playerIndex){
+    startRound(playerIndex) {
         var tmp = [];
         tmp = this.players.splice(playerIndex);
-        tmp.concat(this.players.splice(0,playerIndex-1));
+        tmp.concat(this.players.splice(0, playerIndex - 1));
         return tmp;
 
     }
