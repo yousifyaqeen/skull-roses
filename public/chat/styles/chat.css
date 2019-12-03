@@ -337,3 +337,75 @@ input[type=radio]:checked + div {
     /* background-color: cornflowerblue; */
     /* border-color: cornflowerblue; */
 }
+
+
+
+/* --------------- GAME --------------------- */
+
+.player{
+
+    width: 20vh;
+    height: 20vh;
+    overflow: hidden;
+}
+
+
+
+/* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
+.card {
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+.card-hand {
+    background-color: transparent;
+    width: 20vh;
+    height: 20vh;
+    perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+/* Do an horizontal flip when you move the mouse over the flip box container */
+.card:hover .flip-card-inner {
+transform: r    otateY(180deg);
+}
+
+/* Position the front and back side */
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+/* Style the front side (fallback if image is missing) */
+.flip-card-front {
+    background-image: url(../images/amazons.png);
+}
+
+/* Style the back side */
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+.roses {
+    background-image: url(../images/recto_roses.png);
+}
+.skull {
+    background-image: url(../images/recto_skull.png);
+}
+
+#myHand {
+    display: flex;
+}

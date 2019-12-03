@@ -413,16 +413,39 @@ socket.on("getKey",function(key,id){
     game.class = "content"
     game.dataset.id = id
     game.dataset.game_name = "skullandroses"
-
     game.style.display ="none"
+
+    var div = document.createElement("div");
+    div.id = "thingsAside";
+    var title = document.createElement("h2");
+    title.innerText = "Local Chat"
+    var buttonStart = document.createElement("input");
+    buttonStart.type = "button"
+    buttonStart.value = "Start game"
+    buttonStart.classList = "btn btn-primary btn-lg"
+    buttonStart.id = "btnStart"
+    buttonStart.dataset.index = id;
+    // document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnStart")
+    buttonStart
+    .addEventListener("click",function(){
+        // var roomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
+        startGame();
+    });
+
+    div.appendChild(title)
+    div.appendChild(buttonStart)
+
+    var main = document.createElement("main")
+    game.appendChild(div);
+    game.appendChild(main);
+
     tabs.push(game);
     document.getElementById("content").appendChild(game)
 
-    $(function(){
-        $("[data-game_name='skullandroses']").load("/game/gameServer.html");
-    });
+    // $(function(){
+    //     $("[data-game_name='skullandroses']").load("/game/gameServer.html");
+    // });
 
-    console.log("HEllo")
     var button = document.createElement("input");
     button.type = "button"
     button.value = "S&R | "+ id
@@ -440,17 +463,6 @@ socket.on("getKey",function(key,id){
         console.log("MY fucking id2 :  "+ id)
     })
     createGame.appendChild(button);
-
-    setTimeout(function(){
-        document.querySelector("div[data-id='"+id+"'] div[id='thingsAside'] h2").innerText = "Local Chat"
-        var buttonStart = document.createElement("input");
-        buttonStart.type = "button"
-        buttonStart.value = "Start game"
-        buttonStart.classList = "btn btn-primary btn-lg"
-        buttonStart.id = "btnStart"
-        buttonStart.dataset.index = id;
-        document.querySelector("div[data-id='"+id+"'] div[id='thingsAside']").appendChild(buttonStart);
-    }, 100);
 });
 
 // //------------------------------------//
@@ -505,65 +517,67 @@ socket.on("Gameliste", function(roomId,players) {
     }
 });
 
-function initilizeGames(){
+// function initilizeGames(){
+//
+//     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnImage")
+//     .addEventListener("click",function(){
+//         document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="block";
+//     });
+//
+//     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnRechercher")
+//     .addEventListener("click",function(){
+//         console.log("search clicked")
+//         var searchText = document.querySelector("div[data-id='"+currentlyPlaying+"'] #recherche").value
+//         if(searchText!=""){
+//             console.log("searching for " + searchText)
+//             getSearchGiphyRequest(searchText);
+//          }
+//     });
+//
+//     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnFermer")
+//     .addEventListener("click",function(){
+//         document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="none";
+//     })
+//
+//     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_messages")
+//     .addEventListener("click",function(){
+//         document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="block";
+//         document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="none";
+//
+//     })
+//     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_users")
+//     .addEventListener("click",function(){
+//         document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="block";
+//         document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="none";
+//
+//     })
+//
+//     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnEnvoyer")
+//     .addEventListener("click",function(){
+//             var message = document.querySelector("div[data-id='"+currentlyPlaying+"'] #monMessage").value
+//             sendMessage(message)
+//
+//     });
+//
+//     document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnStart")
+//     .addEventListener("click",function(){
+//         console.log("efibhefsdhb");
+//         // var roomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
+//         startGame();
+//     });
+// }
 
-    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnImage")
-    .addEventListener("click",function(){
-        document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="block";
+
+
+function startGame(){
+    gm = new gameManager(rooms[currentlyPlaying].playerList);
+    console.log("Yolooooo");
+    $(function(){
+        $("[data-id='"+currentlyPlaying+"'] main").load("/chat/html/gameDesign.html");
     });
 
-    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnRechercher")
-    .addEventListener("click",function(){
-        console.log("search clicked")
-        var searchText = document.querySelector("div[data-id='"+currentlyPlaying+"'] #recherche").value
-        if(searchText!=""){
-            console.log("searching for " + searchText)
-            getSearchGiphyRequest(searchText);
-         }
-    });
-
-    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnFermer")
-    .addEventListener("click",function(){
-        document.querySelector("div[data-id='"+currentlyPlaying+"'] #bcImage").style.display ="none";
-    })
-
-    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_messages")
-    .addEventListener("click",function(){
-        document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="block";
-        document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="none";
-
-    })
-    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btn_users")
-    .addEventListener("click",function(){
-        document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_users").style.display ="block";
-        document.querySelector("div[data-id='"+currentlyPlaying+"'] #div_messages").style.display ="none";
-
-    })
-
-    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnEnvoyer")
-    .addEventListener("click",function(){
-            var message = document.querySelector("div[data-id='"+currentlyPlaying+"'] #monMessage").value
-            sendMessage(message)
-
-    });
-
-    document.querySelector("div[data-id='"+currentlyPlaying+"'] #btnStart")
-    .addEventListener("click",function(){
-        var selectedRoomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
-        startGame(selectedRoomId);
-    });
+    gm.startRoundinit();
 }
-
-function startGame(roomId){
-    players[];
-    rooms[roomId].playerList.forEach(p => { //for each player in the room
-        players[p] = new Player(p, "faction");
-    });
-
-
-}
-
-
 
 // ---------------------------- GAME -----
 function arrayRemove(arr, toRemove) {
@@ -672,7 +686,10 @@ class gameManager{
 
     currentPlayer=0;
     constructor(player){
-       this.players.push(player);
+        player.forEach(p => {
+            var newP = new Player(p, "amazons");
+            this.addPlayer(newP);
+        })
     }
 
     addPlayer(player){
@@ -683,7 +700,6 @@ class gameManager{
 
     startRoundinit(){
         this.players.forEach(pl=>{
-
             console.log(pl.pushCard(0));
         })
     }
@@ -695,5 +711,4 @@ class gameManager{
         return tmp;
 
     }
-
 }
