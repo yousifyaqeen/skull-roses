@@ -377,7 +377,7 @@ input[type=radio]:checked + div {
 
 /* Do an horizontal flip when you move the mouse over the flip box container */
 .card:hover .flip-card-inner {
-transform: r    otateY(180deg);
+transform: rotateY(180deg);
 }
 
 /* Position the front and back side */
