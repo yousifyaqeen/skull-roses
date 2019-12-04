@@ -129,8 +129,17 @@ class Room {
             }
         });
     }
+
+
+
  };
  
+ class SkullAndRosesRoom extends Room {
+
+
+
+
+ };
 
 
 //history management
@@ -198,6 +207,7 @@ io.on('connection', function (socket) {
      *  @param  id  string  l'identifiant saisi par le client
      */
     socket.on("login", function(id) {
+        //todo 
         while (clients[id]) {
             id = id + "(1)";   
         }

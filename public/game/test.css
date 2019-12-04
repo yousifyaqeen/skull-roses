@@ -13,7 +13,6 @@ div{
 
     width: 20vh;
     height: 20vh;
-    overflow: hidden;
 }
 
 #myHand {
@@ -60,9 +59,29 @@ div{
   }
 
   /* Style the front side (fallback if image is missing) */
-  .flip-card-front {
+  .amazons {
       background-image: url(./images/amazons.png);
   }
+   
+  .cyborgs {
+    background-image: url(./images/cyborgs.png);
+}
+ 
+.jokers {
+    background-image: url(./images/jokers.png);
+}
+ 
+.carnivorous {
+    background-image: url(./images/carnivorous.png);
+}
+ 
+.swallows {
+    background-image: url(./images/swallows.png);
+}
+.indians {
+    background-image: url(./images/indians.png);
+}
+ 
 
   /* Style the back side */
   .flip-card-back {
