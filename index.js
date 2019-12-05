@@ -121,11 +121,11 @@ class Room {
         }
 
     }
-    sendInvitation(players,roomKey){
+    sendInvitation(sender,players,roomKey){
         players.forEach( p => {
             if(clients[p]!=null){
                 log("sent invitation")
-                clients[p].emit("invitation",{date:Date.now(),from:"YourFather",game_name:"SkullAndRoses",key:roomKey})
+                clients[p].emit("invitation",{date:Date.now(),from:sender,game_name:"SkullAndRoses",key:roomKey})
             }
         });
     }
@@ -158,7 +158,7 @@ var rooms =[];
 
 // Quand un client se connecte, on le note dans la console
 io.on('connection', function (socket) {
-        log("Un client s'est connecté");
+    log("Un client s'est connecté");
     var currentID = null;
     /**
      *  Doit être la première action après la connexion.
@@ -190,10 +190,11 @@ io.on('connection', function (socket) {
             }
             log(room)
             log(room.players)
-        while (room.players[id]) {
-            id = id + "(1)";   
-        }
 
+        if(room.players[id]){
+            log("User with same username is alredy loged in ");
+            return 
+        }
         currentID = id;
         //add player to room
         room.addPlayer(socket,id);
@@ -211,6 +212,7 @@ io.on('connection', function (socket) {
         while (clients[id]) {
             id = id + "(1)";   
         }
+      
         currentID = id;
         clients[currentID] = socket;
         
@@ -218,6 +220,7 @@ io.on('connection', function (socket) {
         // envoi d'un message de bienvenue à ce client
         socket.emit("bienvenue", id);
         // envoi aux autres clients 
+    
         socket.broadcast.emit("message", { from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() } );
 
         addToHistory({ from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() })
@@ -263,13 +266,17 @@ io.on('connection', function (socket) {
      *  Réception d'un message et transmission à tous.
      *  @param  msg     Object  le message à transférer à tous  
      */
-    socket.on("invite", function(players,roomId,roomKey) {
+    socket.on("invite", function(sender,players,roomId,roomKey) {
         log("invite recieved");   
+        if(clients[sender]==socket){
             log(" --> Invitation is being sent");
             rooms.forEach(room => {
                 if(room.roomId==roomId)
-                room.sendInvitation(players,roomKey)  
+                room.sendInvitation(sender,players,roomKey)  
             });
+        }else{
+        log("someone is trying to cheat ");
+        }
            
     });
 

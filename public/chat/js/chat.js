@@ -221,6 +221,7 @@ function main() {
             })
 
             document.getElementById("selectRoombtnSelect").addEventListener("click", function () {
+                document.getElementById("selectRoom").style.display = "none"
                 //todo fix multiple selections
                 var selectedRoomId = document.querySelector('#selectRoom input[type=radio][name=selectRoom]:checked').id
 
@@ -248,7 +249,9 @@ function main() {
                     }
                 })
                 document.getElementById("selectGuestbtnSelect").addEventListener("click", function () {
+                    document.getElementById("selectGuest").style.display = "none"
 
+                    main.display = "none";
                     var playerarray = []
                     var guestList = document.querySelector('#selectGuest input[type=checkbox]:checked');
                     if (Array.isArray(guestList))
@@ -267,9 +270,8 @@ function main() {
 
 
 function sendInvitation(usersToInvite, roomId) {
-    console.log("HERE IM HERE BITCH")
     if (usersToInvite.length < 6)
-        socket.emit("invite", usersToInvite, roomId, rooms[roomId].roomKey)
+        socket.emit("invite",username, usersToInvite, roomId, rooms[roomId].roomKey)
 }
 
 function joinGame(key) {
@@ -288,6 +290,7 @@ socket.on("bienvenue", function (msg) {
 });
 
 socket.on("message", function (msg) {
+    if (connected) {
     var date = new Date(msg.date);
     var dateString = date.getHours() + ":"
     dateString += date.getMinutes() + ":"
@@ -315,10 +318,11 @@ socket.on("message", function (msg) {
         childNode.innerText += msg.text
 
     document.querySelector("#generalchat main").appendChild(childNode)
-
+}
 });
 
 socket.on("invitation", function (msg) {
+    if (connected) {
     var date = new Date(msg.date);
     var dateString = date.getHours() + ":"
     dateString += date.getMinutes() + ":"
@@ -338,10 +342,11 @@ socket.on("invitation", function (msg) {
 
     childNode.appendChild(invitationUrl);
     document.querySelector("#generalchat main").appendChild(childNode)
-
+}
 });
 
 socket.on("liste", function (msg) {
+    if (connected) {
     var main = document.getElementById("asideChat")
     main.innerHTML = ""
     clientListGeneral = msg
@@ -350,10 +355,12 @@ socket.on("liste", function (msg) {
         childNode.innerText = element
         main.appendChild(childNode)
     });
+}
 });
 
 //------------------------------------//
 socket.on("messageGame", function (id, msg) {
+    if (connected) {
     console.log("I got this shit")
     var date = new Date(msg.date);
     var dateString = date.getHours() + ":"
@@ -382,16 +389,16 @@ socket.on("messageGame", function (id, msg) {
         childNode.innerText += msg.text
 
     document.querySelector("div[data-game_id='" + id + "'] div[id='thingsAside']").appendChild(childNode)
-
+    }
 });
 
 
 socket.on("getKey", function (key, id) {
+    if (connected) {
     var room = new Room(key, id);
 
     rooms[id] = room
     keys[id] = key;
-    console.log("my fucking key is  " + key);
 
     var createGame = document.getElementById("tabs")
 
@@ -414,8 +421,7 @@ socket.on("getKey", function (key, id) {
     buttonStart.dataset.index = id;
     buttonStart
         .addEventListener("click", function () {
-            // var roomId = document.querySelector('#selectRoom input[type=checkbox]:checked').id
-            startGame();
+           //todo
         });
 
     div.appendChild(title)
@@ -427,10 +433,6 @@ socket.on("getKey", function (key, id) {
 
     tabs.push(game);
     document.getElementById("content").appendChild(game)
-
-    // $(function(){
-    //     $("[data-game_name='skullandroses']").load("/game/gameServer.html");
-    // });
 
     var button = document.createElement("input");
     button.type = "button"
@@ -449,10 +451,11 @@ socket.on("getKey", function (key, id) {
         console.log("MY fucking id2 :  " + id)
     })
     createGame.appendChild(button);
-
+    }
 });
 
 socket.on("Gameliste", function (roomId, players) {
+    if (connected) {
     console.log(players)
     if (rooms[roomId] != null) {
         /* var checkIsReady =  setInterval(function(main){
@@ -470,6 +473,6 @@ socket.on("Gameliste", function (roomId, players) {
         rooms[roomId].playerList = players
 
     }
-
+    }
 });
 
