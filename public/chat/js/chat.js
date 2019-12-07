@@ -204,7 +204,7 @@ function main() {
 
     document.getElementById("btnInviter")
         .addEventListener("click", function () {
-            //display the room selection dialog 
+            //display the room selection dialog
             document.getElementById("selectRoom").style.display = "block"
             var roomList = document.getElementById("selectRoomResult")
             roomList.innerHTML = ""
@@ -421,7 +421,15 @@ socket.on("getKey", function (key, id) {
     buttonStart.dataset.index = id;
     buttonStart
         .addEventListener("click", function () {
-           //todo
+            var mainGame = document.querySelector("div[data-game_id='" + id + "']>main")
+            var divGame = document.createElement("div")
+            divGame.id = "table"
+            mainGame.appendChild(divGame)
+            divGame = document.createElement("div")
+            divGame.id ="myHand"
+            mainGame.appendChild(divGame)
+
+            socket.emit("startGame", id, room.playerList);
         });
 
     div.appendChild(title)
@@ -475,4 +483,3 @@ socket.on("Gameliste", function (roomId, players) {
     }
     }
 });
-
