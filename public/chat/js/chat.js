@@ -395,71 +395,72 @@ socket.on("messageGame", function (id, msg) {
 
 socket.on("getKey", function (key, id) {
     if (connected) {
-    var room = new Room(key, id);
+        var room = new Room(key, id);
 
-    rooms[id] = room
-    keys[id] = key;
+        rooms[id] = room
+        keys[id] = key;
 
-    var createGame = document.getElementById("tabs")
+        var createGame = document.getElementById("tabs")
 
-    var game = document.createElement("div")
-    game.class = "content"
-    game.dataset.game_id = id
-    game.dataset.game_name = "skullandroses"
+        var game = document.createElement("div")
+        game.class = "content"
+        game.dataset.game_id = id
+        game.dataset.game_name = "skullandroses"
 
-    game.style.display = "none"
+        game.style.display = "none"
 
-    var div = document.createElement("div");
-    div.id = "thingsAside";
-    var title = document.createElement("h2");
-    title.innerText = "Local Chat"
-    var buttonStart = document.createElement("input");
-    buttonStart.type = "button"
-    buttonStart.value = "Start game"
-    buttonStart.classList = "btn btn-primary btn-lg"
-    buttonStart.id = "btnStart"
-    buttonStart.dataset.index = id;
-    buttonStart
-        .addEventListener("click", function () {
-            var mainGame = document.querySelector("div[data-game_id='" + id + "']>main")
-            var divGame = document.createElement("div")
-            divGame.id = "table"
-            mainGame.appendChild(divGame)
-            divGame = document.createElement("div")
-            divGame.id ="myHand"
-            mainGame.appendChild(divGame)
+        var div = document.createElement("div");
+        div.id = "thingsAside";
+        var title = document.createElement("h2");
+        title.innerText = "Local Chat"
+        var buttonStart = document.createElement("input");
+        buttonStart.type = "button"
+        buttonStart.value = "Start game"
+        buttonStart.classList = "btn btn-primary btn-lg"
+        buttonStart.id = "btnStart"
+        buttonStart.dataset.index = id;
+        buttonStart
+            .addEventListener("click", function () {
 
-            socket.emit("startGame", id, room.playerList);
-            socket.emit("getHand", id, username);
-        });
+                socket.emit("startGame", id, room.playerList);
+                socket.emit("getHand", id);
+            });
 
-    div.appendChild(title)
-    div.appendChild(buttonStart)
+        div.appendChild(title)
+        div.appendChild(buttonStart)
 
-    var main = document.createElement("main")
-    game.appendChild(div);
-    game.appendChild(main);
+        var main = document.createElement("main")
+        game.appendChild(div);
+        game.appendChild(main);
 
-    tabs.push(game);
-    document.getElementById("content").appendChild(game)
+        tabs.push(game);
+        document.getElementById("content").appendChild(game)
 
-    var button = document.createElement("input");
-    button.type = "button"
-    button.value = "S&R | " + id
-    button.classList = "btn btn-primary btn-lg"
-    button.id = "btnSkullAndRoses"
-    button.dataset.index = id;
+        var button = document.createElement("input");
+        button.type = "button"
+        button.value = "S&R | " + id
+        button.classList = "btn btn-primary btn-lg"
+        button.id = "btnSkullAndRoses"
+        button.dataset.index = id;
 
-    button.addEventListener("click", function () {
-        tabs.forEach(t => {
-            t.style.display = "none"
-        });
+        button.addEventListener("click", function () {
+            tabs.forEach(t => {
+                t.style.display = "none"
+            });
 
-        game.style.display = "contents"
-        currentlyPlaying = button.dataset.index;
-        console.log("MY fucking id2 :  " + id)
-    })
-    createGame.appendChild(button);
+            game.style.display = "contents"
+            currentlyPlaying = button.dataset.index;
+            console.log("MY fucking id2 :  " + id)
+        })
+        createGame.appendChild(button);
+
+        var mainGame = document.querySelector("div[data-game_id='" + id + "']>main")
+        var divGame = document.createElement("div")
+        divGame.id = "table"
+        mainGame.appendChild(divGame)
+        divGame = document.createElement("div")
+        divGame.id ="myHand"
+        mainGame.appendChild(divGame)
     }
 });
 
@@ -485,33 +486,35 @@ socket.on("Gameliste", function(roomId, players) {
     }
 });
 
-socket.on("giveHand", function(hand, roomId) {
+socket.on("giveHand", function(faction, hand, roomId) {
     console.log("He get something in " + roomId)
     var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='myHand']");
-    game.innerHTML = ""
-    var playerDiv = document.createElement("div");
-    playerDiv.dataset.playerId = username;
-    playerDiv.classList = "player"
-    hand.forEach(c => {
-        console.log("in for each");
-        var card = document.createElement("div")
-        card.dataset.cardIndex = c.id;
-        card.classList = "card"
-        if (c.type == 0)
-            card.innerHTML =
-                '<div class="flip-card-inner">' +
-                '<div class="flip-card-front amazons"></div>' +
-                '<div class="flip-card-back roses"></div></div>'
-        else
-            card.innerHTML =
-                '<div class="flip-card-inner">' +
-                '<div class="flip-card-front amazons"></div>' +
-                '<div class="flip-card-back skull"></div></div>'
+    if(game != null){
+        game.innerHTML = ""
+        var playerDiv = document.createElement("div");
+        playerDiv.dataset.playerId = username;
+        playerDiv.classList = "player"
+        hand.forEach(c => {
+            console.log("in for each");
+            var card = document.createElement("div")
+            card.dataset.cardIndex = c.id;
+            card.classList = "card"
+            if (c.type == 0)
+                card.innerHTML =
+                    '<div class="flip-card-inner">' +
+                    '<div class="flip-card-front '+faction+'"></div>' +
+                    '<div class="flip-card-back roses"></div></div>'
+            else
+                card.innerHTML =
+                    '<div class="flip-card-inner">' +
+                    '<div class="flip-card-front '+faction+'"></div>' +
+                    '<div class="flip-card-back skull"></div></div>'
 
-        playerDiv.appendChild(card);
-    });
-    playerDiv.addEventListener('click', function(){
-        console.log(" inde x: " + playerDiv.dataset.playerId )
-    });
-    game.appendChild(playerDiv);
+            playerDiv.appendChild(card);
+        });
+        playerDiv.addEventListener('click', function(){
+            console.log(" inde x: " + playerDiv.dataset.playerId )
+        });
+        game.appendChild(playerDiv);
+    }
 });

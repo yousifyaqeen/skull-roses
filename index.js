@@ -138,14 +138,14 @@ class Game {
         this.players = []
         this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
         userlist.forEach(p => {
-            log("name = " + p);
-            var user = new Player(p, this.factions[this.players.length-1])
-            this.addPlayer(user)
+            this.addPlayer(p)
         })
     }
 
-    addPlayer(player) {
+    addPlayer(pseudo) {
         if(this.players.length < 7) {
+            log("name = " + pseudo);
+            var player = new Player(pseudo, this.factions[this.players.length-1])
             this.players.push(player);
             // var game = document.getElementById("table");
             // var playerDiv = document.createElement("div");
@@ -194,11 +194,11 @@ class Game {
 
     }
 
-    getHand(username){
+    getHand(){
         this.players.forEach(p=>{
-            if(p.name == username){
-                io.sockets.emit("giveHand", p.hand.cards, this.roomId)
-            }
+            // io.to(this.roomId).emit("giveHand",p.faction, p.hand.cards, this.roomId)
+            clients[p.name].emit("giveHand",p.faction, p.hand.cards, this.roomId)
+            // io.sockets.emit("giveHand",p.faction, p.hand.cards, this.roomId)
         });
     }
 };
@@ -521,15 +521,12 @@ io.on('connection', function (socket) {
         games.push(g)
     });
 
-    socket.on("getHand", function(roomId , username){
-        log(username + " ask for he's hand");
-        if(clients[username]==socket){
-            games.forEach(g => {
-                if(g.roomId == roomId){
-                    g.getHand(username)
-                }
-            });
-        }
+    socket.on("getHand", function(roomId){
+        games.forEach(g => {
+            if(g.roomId == roomId){
+                g.getHand()
+            }
+        });
 
     });
 
