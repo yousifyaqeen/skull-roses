@@ -132,21 +132,20 @@ class Room {
 };
 
 class Game {
-    players = []
-    factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
 
     constructor(roomId, userlist){
-        this.roomId = null;
+        this.roomId = roomId;
+        this.players = []
+        this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
         userlist.forEach(p => {
             log("name = " + p);
             var user = new Player(p, this.factions[this.players.length-1])
             this.addPlayer(user)
-            log(this.players[p].hand.cards[0])
         })
     }
 
     addPlayer(player) {
-        if ((this.players.length + 1) < 7) {
+        if(this.players.length < 7) {
             this.players.push(player);
             // var game = document.getElementById("table");
             // var playerDiv = document.createElement("div");
@@ -193,6 +192,14 @@ class Game {
         tmp.concat(this.players.splice(0, playerIndex - 1));
         return tmp;
 
+    }
+
+    getHand(username){
+        this.players.forEach(p=>{
+            if(p.name == username){
+                io.sockets.emit("giveHand", p.hand.cards, this.roomId)
+            }
+        });
     }
 };
 
@@ -293,6 +300,7 @@ function addToHistory(message){
 
 
 var rooms =[];
+var games =[];
 
 // Quand un client se connecte, on le note dans la console
 io.on('connection', function (socket) {
@@ -510,10 +518,19 @@ io.on('connection', function (socket) {
 
     socket.on("startGame", function(roomId, userlist){
         var g = new Game(roomId, userlist)
-        rooms.forEach(room => {
-            if(room.id == roomId)
-                g.addPlayer()
-        });
+        games.push(g)
+    });
+
+    socket.on("getHand", function(roomId , username){
+        log(username + " ask for he's hand");
+        if(clients[username]==socket){
+            games.forEach(g => {
+                if(g.roomId == roomId){
+                    g.getHand(username)
+                }
+            });
+        }
+
     });
 
 });

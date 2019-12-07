@@ -430,6 +430,7 @@ socket.on("getKey", function (key, id) {
             mainGame.appendChild(divGame)
 
             socket.emit("startGame", id, room.playerList);
+            socket.emit("getHand", id, username);
         });
 
     div.appendChild(title)
@@ -462,7 +463,7 @@ socket.on("getKey", function (key, id) {
     }
 });
 
-socket.on("Gameliste", function (roomId, players) {
+socket.on("Gameliste", function(roomId, players) {
     if (connected) {
     console.log(players)
     if (rooms[roomId] != null) {
@@ -482,4 +483,35 @@ socket.on("Gameliste", function (roomId, players) {
 
     }
     }
+});
+
+socket.on("giveHand", function(hand, roomId) {
+    console.log("He get something in " + roomId)
+    var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='myHand']");
+    game.innerHTML = ""
+    var playerDiv = document.createElement("div");
+    playerDiv.dataset.playerId = username;
+    playerDiv.classList = "player"
+    hand.forEach(c => {
+        console.log("in for each");
+        var card = document.createElement("div")
+        card.dataset.cardIndex = c.id;
+        card.classList = "card"
+        if (c.type == 0)
+            card.innerHTML =
+                '<div class="flip-card-inner">' +
+                '<div class="flip-card-front amazons"></div>' +
+                '<div class="flip-card-back roses"></div></div>'
+        else
+            card.innerHTML =
+                '<div class="flip-card-inner">' +
+                '<div class="flip-card-front amazons"></div>' +
+                '<div class="flip-card-back skull"></div></div>'
+
+        playerDiv.appendChild(card);
+    });
+    playerDiv.addEventListener('click', function(){
+        console.log(" inde x: " + playerDiv.dataset.playerId )
+    });
+    game.appendChild(playerDiv);
 });
