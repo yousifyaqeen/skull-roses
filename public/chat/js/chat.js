@@ -420,11 +420,10 @@ socket.on("getKey", function (key, id) {
         buttonStart.dataset.index = id;
         buttonStart
             .addEventListener("click", function () {
-
-                socket.emit("startGame", id, room.playerList);
                 socket.emit("getHand", id);
                 socket.emit("getTable", id);
                 buttonStart.style.display = "none"
+                socket.emit("startGame", id);
             });
 
         div.appendChild(title)
