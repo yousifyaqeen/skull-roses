@@ -29,11 +29,9 @@ var rooms = []
 function getSearchGiphyRequest(searchString) {
     const Http = new XMLHttpRequest();
     const url = 'http://api.giphy.com/v1/gifs/search?q=' + searchString + '&api_key=' + API_KEY + '&limit=' + max_search_results;
-    console.log(url)
     Http.open("GET", url);
     Http.send();
     Http.onreadystatechange = (e) => {
-        console.log(Http.responseText)
         if (Http.responseText != "") {
             var response = JSON.parse(Http.responseText);
             displaySearchResults(response);
@@ -47,7 +45,6 @@ function getSearchGiphyRequest(searchString) {
 function displaySearchResults(response) {
     //div holding all the gifs
     var container = document.getElementById("bcResults");
-    //console.log("parsing response")
     //for each item in the list (ideally 32 but could be 0)
     response.data.forEach(element => {
         var img = document.createElement("img")
@@ -171,7 +168,6 @@ function main() {
 
     document.getElementById("btnRechercher")
         .addEventListener("click", function () {
-            console.log("search clicked")
             var searchText = document.getElementById("recherche").value
             if (searchText != "") {
                 console.log("searching for " + searchText)
@@ -229,7 +225,6 @@ function main() {
                 //todo fix multiple selections
                 var selectedRoomId = document.querySelector('#selectRoom input[type=radio][name=selectRoom]:checked').id
 
-                console.log(selectedRoomId)
                 document.getElementById("selectGuest").style.display = "block"
                 var main = document.getElementById("selectGuestResult")
                 main.innerHTML = ""
@@ -259,7 +254,6 @@ function main() {
                     var playerarray = []
                     var guestList = document.querySelectorAll('#selectGuest input[type=checkbox]:checked');
                     guestList.forEach(element => {
-                        console.log("we push " + element.id);
                         playerarray.push(element.id)
                     });
                     sendInvitation(playerarray, selectedRoomId);
@@ -283,9 +277,7 @@ socket.on("bienvenue", function (msg) {
     if (!connected) {
         console.log("Le serveur me souhaite la bienvenue : " + msg);
         username = msg
-        //document.getElementById("radio1").removeAttribute("checked")
         document.getElementById("radio2").checked = true;
-        // document.getElementById("login").innerHTML = msg;
         connected = true;
     }
 });
@@ -364,7 +356,6 @@ socket.on("liste", function (msg) {
 //------------------------------------//
 socket.on("messageGame", function (id, msg) {
     if (connected) {
-        console.log("I got this shit")
         var date = new Date(msg.date);
         var dateString = date.getHours() + ":"
         dateString += date.getMinutes() + ":"
@@ -477,7 +468,6 @@ socket.on("getKey", function (key, id) {
 
             game.style.display = "contents"
             currentlyPlaying = button.dataset.index;
-            console.log("MY fucking id2 :  " + id)
         })
         createGame.appendChild(button);
 
@@ -495,18 +485,6 @@ socket.on("getKey", function (key, id) {
 socket.on("Gameliste", function (roomId, players) {
     if (connected) {
         if (rooms[roomId] != null) {
-            /* var checkIsReady =  setInterval(function(main){
-                  var main = document.querySelector("div[data-game_id='"+roomId+"'] div[id='thingsAside']")
-                  if(main!=null){
-                  main.innerHTML = ""
-                  msg.forEach(element => {
-                      var childNode = document.createElement("p")
-                      childNode.innerText = element
-                      main.appendChild(childNode)
-                      });
-                      clearInterval(checkIsReady)
-                  }
-              }, 500);*/
             rooms[roomId].playerList = players
 
         }
@@ -514,7 +492,6 @@ socket.on("Gameliste", function (roomId, players) {
 });
 
 socket.on("giveHand", function (faction, hand, roomId) {
-    console.log(hand)
 
     var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='myHand']");
     if (game != null) {
@@ -545,7 +522,6 @@ socket.on("giveHand", function (faction, hand, roomId) {
             }
         });
         playerDiv.addEventListener('click', function () {
-            console.log(" inde x: " + playerDiv.dataset.playerId)
         });
         game.appendChild(playerDiv);
     }
@@ -556,7 +532,6 @@ function playCard(roomId, index) {
 }
 
 socket.on("beginMatch", function (roomId) {
-    console.log("heheheh")
     document.querySelector("div[data-game_id='" + roomId + "'] div[id='thingsAside'] input[id='btnStart'").remove()
 })
 socket.on("giveTable", function (onTable, roomId) {
@@ -581,13 +556,9 @@ socket.on("giveTable", function (onTable, roomId) {
                         '<div class="flip-card-inner">' +
                         '<div class="flip-card-front ' + p.faction + '"></div>' +
                         '<div class="flip-card-back skull"></div></div>'
-
-                // playerDiv.appendChild(card);
                 playerDiv.insertBefore(card, playerDiv.firstChild);
             });
-            // playerDiv.addEventListener('click', function(){
-            //     console.log(" inde x: " + playerDiv.dataset.playerId )
-            // });
+        
             game.appendChild(playerDiv);
         })
     }
