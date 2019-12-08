@@ -394,6 +394,7 @@ socket.on("messageGame", function (id, msg) {
 
 
 socket.on("getKey", function (key, id) {
+    console.log("GOT JEy")
     if (connected) {
         var room = new Room(key, id);
 

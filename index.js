@@ -37,257 +37,9 @@ app.post('/skullandroses', function (req, res) {
     log(req.body)
   })
 
+var Room = require('./Room.js');
 
-/* represents a game room
-* Each room has an id and a key
-* to connect a player to the room use addplayer
-*/
-class Room {
-
-    constructor(roomId,isPrivate){
-     this.roomId = null;
-     this.roomKey = null;
-     this.players = {};
-     this.Room(roomId,isPrivate);
-     this.inGame = false;
-    }
-
-    Room(roomId,isPrivate){
-     if(isPrivate)
-      this.roomKey = this.generateKey()
-     else
-         this.roomKey =null;
-
-     this.roomId = roomId
-     log("new room created with id " + this.roomId + "key : " + this.roomKey);
-
-    }
-    /** add a player to the room
-    *
-    * @param socket the player socket
-    * @param string the player id
-    */
-    addPlayer(socket,clientId){
-        if(!this.inGame){
-            socket.emit("getKey",this.roomKey,this.roomId)
-            io.to(this.roomId).emit("messageGame",this.roomId, { from: null, to: null,roomId:this.roomId ,text: clientId + " a rejoint le jeu", date: Date.now() } );
-            this.players[clientId] =  socket;
-            this.players[clientId].join(this.roomId);
-                    //Send connection notification to room
-            // todo change get key
-            this.players[clientId].emit("bienvenue", {clientId : clientId,roomKey: this.roomKey});
-            io.to(this.roomId).emit("Gameliste", this.roomId,Object.keys(this.players));
-        }
-    }
-
-    /** add a player to the room
-    *
-    * @param string the player id
-    */
-    removePlayer(clientId){
-        if(this.players[clientId]){
-            this.players[clientId].leave(this.roomId);
-            io.to(this.roomId).emit("message", { from: null, to: null,roomId:this.roomId, text: clientId + " vient de se déconnecter de l'application", date: Date.now() });
-            delete this.players[clientId]
-            io.to(this.roomId).emit("Gameliste", this.roomId,Object.keys(this.players));
-        }
-
-    }
-     /** return room key  */
-    getKey(){
-        return this.roomKey;
-    }
-     /** return room id  */
-
-    getId(){
-        return this.roomId;
-    }
-    /** generate room private key */
-    generateKey(){
-            return '_' + Math.random().toString(36).substr(2, 9);
-    }
-    /** send a message to the group */
-    sendMessage(msg){
-        msg.date = Date.now();
-        if(this.players[msg.from]){
-            if(this.roomKey==msg.roomKey){
-                if(msg.to==null){
-                    io.to(this.roomId).emit("messageGame",this.roomId, msg);
-                    log("message Sent");
-                }else{
-                    if(this.players[msg.to]!=null)
-                        this.players[msg.to].emit("messageGame",this.roomId, msg);
-                }
-            }
-            else
-                log("the sender has the wrong key");
-        }
-
-    }
-    sendInvitation(sender,players,roomKey){
-        players.forEach( p => {
-            if(clients[p]!=null){
-                log("sent invitation")
-                clients[p].emit("invitation",{date:Date.now(),from:sender,game_name:"SkullAndRoses",key:roomKey})
-            }
-        });
-    }
-};
-
-class Game {
-    constructor(roomId, userlist){
-        this.roomId = roomId;
-        this.players = []
-        this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
-        userlist.forEach(p => {
-            this.addPlayer(p)
-        })
-    }
-
-    addPlayer(pseudo) {
-        if(this.players.length < 7) {
-            log("name = " + pseudo);
-            var player = new Player(pseudo, this.factions[this.players.length])
-            this.players.push(player);
-            // var game = document.getElementById("table");
-            // var playerDiv = document.createElement("div");
-            // playerDiv.dataset.playerId = this.players.length-1;
-            // playerDiv.classList = "player"
-            // var i = 0;
-            // this.players[this.players.length - 1].hand.cards.forEach(c => {
-            //     var card = document.createElement("div")
-            //     card.dataset.cardIndex = c.id;
-            //     card.classList = "card"
-            //     if (c.type == 0)
-            //         card.innerHTML =
-            //             '<div class="flip-card-inner">' +
-            //             '<div class="flip-card-front '+ player.faction + '"></div>' +
-            //             '<div class="flip-card-back roses"></div></div>'
-            //     else
-            //         card.innerHTML =
-            //             '<div class="flip-card-inner">' +
-            //             '<div class="flip-card-front '+ player.faction+'"></div>' +
-            //             '<div class="flip-card-back skull"></div></div>'
-            //
-            //     playerDiv.appendChild(card);
-            //
-            //     i++
-            // });
-            // playerDiv.addEventListener('click', function(){
-            //     console.log(" inde x: " + playerDiv.dataset.playerId )
-            // });
-            // game.appendChild(playerDiv);
-        }
-
-    }
-
-
-    startRoundinit() {
-        this.players.forEach(pl => {
-            console.log(pl.pushCard(0));
-        })
-    }
-
-    startRound(playerIndex) {
-        var tmp = [];
-        tmp = this.players.splice(playerIndex);
-        tmp.concat(this.players.splice(0, playerIndex - 1));
-        return tmp;
-
-    }
-
-    getHand(){
-        this.players.forEach(p=>{
-            // io.to(this.roomId).emit("giveHand",p.faction, p.hand.cards, this.roomId)
-            clients[p.name].emit("giveHand",p.faction, p.hand.cards, this.roomId)
-            // io.sockets.emit("giveHand",p.faction, p.hand.cards, this.roomId)
-        });
-    }
-};
-
-class Hand {
-    cards = [];//1 skull : 0 roses
-    blocked = [];
-    constructor() {
-        this.cards = [{ id: 0, type: 0 }, { id: 1, type: 0 }, { id: 2, type: 0 }, { id: 3, type: 0 }]
-        this.cards[Math.floor(Math.random() * 4)].type = 1;
-        //shuffle(this.cards)
-    }
-
-    reveal(nb) {
-        if (nb <= 0)
-            return;
-        var revealed = []
-        var currentIndex = 0
-        while (currentIndex < nb) {
-            revealed = this.blocked[currentIndex];
-            currentIndex += 1
-        }
-        return revealed
-    }
-
-    block(index) {
-        if (this.cards[index] != null) {
-            this.blocked.push(this.cards[index])
-            this.cards[index] = null;
-            return this.blocked[this.blocked.length - 1];
-        }
-    }
-
-    unblock() {
-        this.cards.forEach(card => {
-            if (card == null) {
-                card = this.blocked.pop();
-            }
-        });
-
-        if (this.blocked.length > 0) {
-            console.log("Error Unblock");
-        }
-    }
-
-    removeFromHand(index) {
-        if (index < this.cards.length)
-            this.cards.splice(index, 1);
-    }
-
-}
-
-class Player {
-    name = "";
-    faction;
-    hand;
-    points;
-    bet;
-    constructor(name, faction) {
-        this.name = name;
-        this.hand = new Hand();
-        this.faction = faction;
-    }
-
-    pushCard(index) {
-        return this.hand.block(index);
-    }
-    raise(nb) {
-        bet += nb;
-    }
-
-    fold() {
-        bet = 0;
-    }
-    reveal(nb) {
-        this.hand.reveal(nb);
-    }
-    restart() {
-        this.bet = 0;
-        this.hand.unblock();
-    }
-    removeCard(index) {
-        return this.hand.removeFromHand(index);
-    }
-}
-
-
+var Game = require('./SkullAndRoses.js')
 
 //history management
 var history = [];
@@ -296,10 +48,8 @@ function addToHistory(message){
     if(history.length >= 100)
         history.pop();
     history.push(message)
-5
+
 }
-
-
 
 var rooms =[];
 var games =[];
@@ -333,7 +83,7 @@ io.on('connection', function (socket) {
         //creating new room
         if(room==null){
                 var roomId =  Math.random().toString(10).substr(2, 5);
-                room= new Room(roomId,true);
+                room= new Game(io,roomId,true,null);
                 rooms.push(room)
             }
             log(room)
@@ -534,7 +284,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on("getHand", function(roomId){
-        games.forEach(g => {
+        rooms.forEach(g => {
             if(g.roomId == roomId){
                 g.getHand()
             }
