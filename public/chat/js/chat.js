@@ -16,7 +16,7 @@ class Room {
     constructor(roomKey, roomId) {
         this.playerList.push(username)
         this.roomKey = roomKey
-        this.roomId = roomId
+        this.roomId = roomId    
     }
 }
 //holds all the game rooms except the general chat
