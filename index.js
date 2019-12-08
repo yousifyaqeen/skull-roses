@@ -20,6 +20,11 @@ var io = require('socket.io').listen(server);
 
 // Configuration d'express pour utiliser le répertoire "public"
 app.use(express.static('public'));
+
+app.get('/', function (req, res) {	
+    res.sendFile(__dirname + '/public/chat.html');	
+});
+
 // set up to
 var Game = require('./SkullAndRoses.js')
 
