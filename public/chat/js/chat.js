@@ -140,11 +140,15 @@ function main() {
     tabs.push(document.getElementById("generalchat"))
 
     document.getElementById("btnQuitter").addEventListener("click", function () {
-        socket.emit("logout");
-        socket.close();
-        connected = false;
-        document.getElementById("radio1").checked = true;
-        document.getElementById("radio2").removeAttribute("checked")
+        if(currentlyPlaying == -1){
+            socket.emit("logout");
+            socket.close();
+            connected = false;
+            document.getElementById("radio1").checked = true;
+            document.getElementById("radio2").removeAttribute("checked")
+        } else {
+            socket.emit("logoutGame", currentlyPlaying);
+        }
 
     });
     document.getElementById("btnGeneralChat").addEventListener("click", function () {
@@ -331,9 +335,10 @@ socket.on("invitation", function (msg) {
         if (msg.from == null)
             return;
         childNode.innerText += msg.from
-        childNode.innerText += " Invited you to play " + msg.game_name;
+        childNode.innerText += " Invited you to play " + msg.game_name + ".";
         var invitationUrl = document.createElement("a")
-        invitationUrl.innerText = "Click to Join"
+        invitationUrl.innerText = "  Click to Join"
+        invitationUrl.style = "font-weight : bold; cursor: pointer;";
         invitationUrl.addEventListener("click", function () {
             joinGame(msg.key)
         })
@@ -577,7 +582,8 @@ socket.on("giveTable", function (onTable, roomId) {
                         '<div class="flip-card-front ' + p.faction + '"></div>' +
                         '<div class="flip-card-back skull"></div></div>'
 
-                playerDiv.appendChild(card);
+                // playerDiv.appendChild(card);
+                playerDiv.insertBefore(card, playerDiv.firstChild);
             });
             // playerDiv.addEventListener('click', function(){
             //     console.log(" inde x: " + playerDiv.dataset.playerId )
@@ -585,4 +591,14 @@ socket.on("giveTable", function (onTable, roomId) {
             game.appendChild(playerDiv);
         })
     }
+});
+
+socket.on("leaveRoom", function(roomId) {
+    var game = document.querySelector("div[data-game_id='" + roomId + "']");
+    var button = document.querySelector("input[data-index='" + roomId + "']");
+    document.getElementById("tabs").removeChild(button);
+    document.getElementById("content").removeChild(game);
+
+    document.getElementById("generalchat").style.display = "contents";
+    currentlyPlaying = -1;
 });

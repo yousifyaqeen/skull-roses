@@ -75,9 +75,10 @@ class Room {
     removePlayer(clientId) {
         if (this.players[clientId]) {
             this.players[clientId].socket.leave(this.roomId);
-            this.io.to(this.roomId).emit("message", { from: null, to: null, roomId: this.roomId, text: clientId + " vient de se déconnecter de l'application", date: Date.now() });
+            this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " vient de quitter le jeu", date: Date.now() });
+            this.players[clientId].socket.emit("leaveRoom", this.roomId);
             delete this.players[clientId]
-            sendPlayerList()
+            // sendPlayerList()
         }
     }
     /** return room key  */
