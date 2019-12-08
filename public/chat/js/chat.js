@@ -253,14 +253,11 @@ function main() {
 
                     main.display = "none";
                     var playerarray = []
-                    var guestList = document.querySelector('#selectGuest input[type=checkbox]:checked');
-                    if (Array.isArray(guestList))
-                        guestList.forEach(element => {
-                            playerarray.push(element.id)
-                        });
-                    else
-                        playerarray.push(guestList.id)
-
+                    var guestList = document.querySelectorAll('#selectGuest input[type=checkbox]:checked');
+                    guestList.forEach(element => {
+                        console.log("we push " + element.id);
+                        playerarray.push(element.id)
+                    });
                     sendInvitation(playerarray, selectedRoomId);
                 })
             });
