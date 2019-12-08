@@ -7,7 +7,9 @@ class SkullAndRosesGame extends Room {
 
     constructor(io, roomId, isPrivate, userlist) {
         super(io, roomId, isPrivate)
+        this.currentPlayer = 0;
         this.gameStarted = false;
+        this.turnDeter = []//store the playing order
         this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
         if (Array.isArray(userlist))
             userlist.forEach(p => {
@@ -37,12 +39,13 @@ class SkullAndRosesGame extends Room {
             this.getTable();
             this.getHand()
             this.io.to(this.roomId).emit("beginMatch",this.roomId);
-            Object.keys(players).map(function (clientId, index) {
-                this.turnDeter.push(clientId);
-            })
+
         }
     }
 
+    playRound(){
+       
+    }
 
     startRound(clientId) {
 
@@ -80,7 +83,7 @@ class SkullAndRosesGame extends Room {
         if (this.gameStarted) {
             var players = this.players
             Object.keys(players).map(function (clientId, index) {
-                if (players[clientId].socket == socket ) {
+                if (players[clientId].socket == socket) {
                     players[clientId].pushCard(id);
                 }
             })
