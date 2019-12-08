@@ -18,9 +18,10 @@ class SkullAndRosesGame extends Room {
     addPlayer(socket,clientId) {
         console.log("Hello")
         if(this.getNumberOfPlayers() < 7) {
+            var playerindex = this.getNumberOfPlayers();
             socket.emit("getKey", this.roomKey, this.roomId)
             this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
-            this.players[clientId] = new Player(socket,clientId, this.factions[this.getNumberOfPlayers()]);
+            this.players[clientId] = new Player(playerindex,socket,clientId, this.factions[this.getNumberOfPlayers()]);
             this.players[clientId].socket.join(this.roomId);
             this.sendWelcomeMessage(clientId);
             this.sendPlayerList() ;
@@ -34,6 +35,7 @@ class SkullAndRosesGame extends Room {
         Object.keys(this.players).map(function(clientId, index) {
             //console.log(players[clientId].pushCard(0));
         });
+        //startRound(0);
         this.getHand()
     }
 
@@ -130,10 +132,11 @@ class Hand {
 }
 
 class Player extends Room_Player{
-    constructor(socket ,name, faction) {
+    constructor(index,socket ,name, faction) {
         super(socket)
         this.points=0
         this.bet = 0
+        this.index = index;
         this.name = name;
         this.hand = new Hand();
         this.faction = faction;
