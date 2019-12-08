@@ -19,7 +19,7 @@ class SkullAndRosesGame extends Room {
 
     addPlayer(socket, clientId) {
         console.log("Hello")
-        if ((this.getNumberOfPlayers() < 7) && !this.gameStarted) {
+        if ((this.getNumberOfPlayers() < 7) && !this.gameStarted && !this.inGame) {
             var playerindex = this.getNumberOfPlayers();
             socket.emit("getKey", this.roomKey, this.roomId)
             this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
@@ -34,6 +34,7 @@ class SkullAndRosesGame extends Room {
 
     startRoundinit() {
         if (!this.gameStarted) {
+            this.inGame = true;
             //startRound(0);
             this.gameStarted = true;
             this.getTable();
@@ -44,7 +45,7 @@ class SkullAndRosesGame extends Room {
     }
 
     playRound(){
-       
+
     }
 
     startRound(clientId) {
@@ -57,7 +58,7 @@ class SkullAndRosesGame extends Room {
 
     }
 
-   
+
 
     getHand() {
         var players = this.players

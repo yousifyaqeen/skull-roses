@@ -199,19 +199,16 @@ io.on('connection', function (socket) {
      */
 
     // fermeture
-    socket.on("logoutGame", function() {
+    socket.on("logoutGame", function(roomId) {
         // si client était identifié (devrait toujours être le cas)
         if (currentID) {
             log("Sortie de l'utilisateur " + currentID);
             // envoi de l'information de déconnexion
-
-            socket.broadcast.emit("message",
-                { from: null, to: null, text: currentID + " a quitté la discussion", date: Date.now() } );
-                // suppression de l'entrée
-            delete clients[currentID];
-            // envoi de la nouvelle liste pour mise à jour
-            socket.broadcast.emit("liste", Object.keys(clients));
-            addToHistory( { from: null, to: null, text: currentID + " a quitté la discussion", date: Date.now() })
+            games.forEach(r=>{
+                if(r.roomId == roomId){
+                    r.removePlayer(currentID)
+                }
+            })
         }
     });
 
