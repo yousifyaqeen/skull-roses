@@ -77,7 +77,6 @@ class Room {
             delete this.players[clientId]
             sendPlayerList()
         }
-
     }
     /** return room key  */
     getKey() {

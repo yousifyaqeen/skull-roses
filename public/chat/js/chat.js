@@ -421,10 +421,8 @@ socket.on("getKey", function (key, id) {
         buttonStart
             .addEventListener("click", function () {
                 socket.emit("startGame", id);
-
                 socket.emit("getHand", id);
                 socket.emit("getTable", id);
-                buttonStart.style.display = "none"
             });
 
         div.appendChild(title)
@@ -528,6 +526,11 @@ socket.on("giveHand", function(faction, hand, roomId) {
 function playCard(roomId,index){
     socket.emit("playCard",roomId, index)
 } 
+
+socket.on("beginMatch",function(roomId){
+    console.log("heheheh")
+    document.querySelector("div[data-game_id='" + roomId + "'] div[id='thingsAside'] input[id='btnStart'").remove()
+})
 socket.on("giveTable", function(onTable, roomId) {
     var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='table']");
     if(game != null){

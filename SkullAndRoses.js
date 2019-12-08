@@ -4,42 +4,50 @@ var Room = roomModuels.Room
 var Room_Player = roomModuels.Player
 
 class SkullAndRosesGame extends Room {
-    
-    constructor(io,roomId,isPrivate, userlist){
-        super(io,roomId,isPrivate)
-        this.currentPlayer=0;
+
+    constructor(io, roomId, isPrivate, userlist) {
+        super(io, roomId, isPrivate)
+        this.currentPlayer = 0;
+        this.gameStarted = false;
+        this.turnDeter = []//store the playing order
         this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
-        if(Array.isArray(userlist))
+        if (Array.isArray(userlist))
             userlist.forEach(p => {
                 this.addPlayer(p)
             })
     }
 
-    addPlayer(socket,clientId) {
+    addPlayer(socket, clientId) {
         console.log("Hello")
-        if(this.getNumberOfPlayers() < 7) {
+        if ((this.getNumberOfPlayers() < 7) && !this.gameStarted) {
             var playerindex = this.getNumberOfPlayers();
             socket.emit("getKey", this.roomKey, this.roomId)
             this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
-            this.players[clientId] = new Player(playerindex,socket,clientId, this.factions[this.getNumberOfPlayers()]);
+            this.players[clientId] = new Player(playerindex, socket, clientId, this.factions[this.getNumberOfPlayers()]);
             this.players[clientId].socket.join(this.roomId);
             this.sendWelcomeMessage(clientId);
-            this.sendPlayerList() ;
+            this.sendPlayerList();
         }
 
     }
 
 
     startRoundinit() {
-        var players = this.players
-        Object.keys(this.players).map(function(clientId, index) {
-            //console.log(players[clientId].pushCard(0));
-        });
-        //startRound(0);
-        this.getHand()
+        if (!this.gameStarted) {
+            //startRound(0);
+            this.gameStarted = true;
+            this.getTable();
+            this.getHand()
+            this.io.to(this.roomId).emit("beginMatch",this.roomId);
+        }
     }
 
-    startRound(playerIndex) {
+    playRound(){
+       
+    }
+
+    startRound(clientId) {
+
         var tmp = [];
         tmp = this.players.splice(playerIndex);
         tmp.concat(this.players.splice(0, playerIndex - 1));
@@ -48,36 +56,36 @@ class SkullAndRosesGame extends Room {
 
     }
 
+   
 
-    getHand(){
+    getHand() {
         var players = this.players
         var roomId = this.roomId
-        Object.keys(players).map(function(clientId, index) {
+        Object.keys(players).map(function (clientId, index) {
             var p = players[clientId]
             console.log("giving hand" + p.hand.cards)
-            p.socket.emit("giveHand",p.faction, p.hand.cards,roomId)
+            p.socket.emit("giveHand", p.faction, p.hand.cards, roomId)
         });
     }
 
-    getTable(){
+    getTable() {
         var players = this.players
         var onTable = []
-        Object.keys(players).map(function(clientId, index) {
+        Object.keys(players).map(function (clientId, index) {
             var p = players[clientId]
-            onTable.push({name: p.name, faction: p.faction, blocked: p.hand.blocked})
+            onTable.push({ name: p.name, faction: p.faction, blocked: p.hand.blocked })
         });
         this.io.to(this.roomId).emit("giveTable", onTable, this.roomId)
     }
 
-    playCard(socket,id){
-        var players = this.players
-        Object.keys(players).map(function(clientId, index) {
-            if(players[clientId].socket == socket){
-                players[clientId].pushCard(id);
-            }
-        })
-        this.getTable()
-        this.getHand()
+    playCard(socket, id) {
+        if (this.gameStarted) {
+            var players = this.players
+            var cp = this.currentPlayer
+           
+            this.getTable()
+            this.getHand()
+        }
     }
 };
 
@@ -107,7 +115,7 @@ class Hand {
             this.blocked.push(this.cards[index])
             this.cards[index] = null;
             return this.blocked[this.blocked.length - 1];
-        }else{
+        } else {
             return null
         }
     }
@@ -131,10 +139,10 @@ class Hand {
 
 }
 
-class Player extends Room_Player{
-    constructor(index,socket ,name, faction) {
+class Player extends Room_Player {
+    constructor(index, socket, name, faction) {
         super(socket)
-        this.points=0
+        this.points = 0
         this.bet = 0
         this.index = index;
         this.name = name;
@@ -143,8 +151,8 @@ class Player extends Room_Player{
     }
 
     pushCard(index) {
-        if(this.hand.block(index)==null)
-         return null
+        if (this.hand.block(index) == null)
+            return null
     }
     raise(nb) {
         bet += nb;
