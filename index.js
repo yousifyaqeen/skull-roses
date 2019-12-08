@@ -269,7 +269,13 @@ io.on('connection', function (socket) {
         });
 
     });
-
+    socket.on("playCard", function(roomId,cardIndex){
+        games.forEach(g => {
+            if(g.roomId == roomId){
+                g.playCard(socket,cardIndex)
+            }
+        });
+    })
     socket.on("getHand", function(roomId){
         games.forEach(g => {
             if(g.roomId == roomId){

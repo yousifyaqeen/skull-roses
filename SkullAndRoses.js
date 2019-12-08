@@ -4,9 +4,10 @@ var Room = roomModuels.Room
 var Room_Player = roomModuels.Player
 
 class SkullAndRosesGame extends Room {
-
+    
     constructor(io,roomId,isPrivate, userlist){
         super(io,roomId,isPrivate)
+        this.currentPlayer=0;
         this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
         if(Array.isArray(userlist))
             userlist.forEach(p => {
@@ -40,6 +41,7 @@ class SkullAndRosesGame extends Room {
         var tmp = [];
         tmp = this.players.splice(playerIndex);
         tmp.concat(this.players.splice(0, playerIndex - 1));
+        console.log(tmp);
         return tmp;
 
     }
@@ -50,6 +52,7 @@ class SkullAndRosesGame extends Room {
         var roomId = this.roomId
         Object.keys(players).map(function(clientId, index) {
             var p = players[clientId]
+            console.log("giving hand" + p.hand.cards)
             p.socket.emit("giveHand",p.faction, p.hand.cards,roomId)
         });
     }
@@ -63,6 +66,17 @@ class SkullAndRosesGame extends Room {
         });
         this.io.to(this.roomId).emit("giveTable", onTable, this.roomId)
     }
+
+    playCard(socket,id){
+        var players = this.players
+        Object.keys(players).map(function(clientId, index) {
+            if(players[clientId].socket == socket){
+                players[clientId].pushCard(id);
+            }
+        })
+        this.getTable()
+        this.getHand()
+    }
 };
 
 class Hand {
@@ -71,7 +85,6 @@ class Hand {
         this.blocked = []
         this.cards = [{ id: 0, type: 0 }, { id: 1, type: 0 }, { id: 2, type: 0 }, { id: 3, type: 0 }]
         this.cards[Math.floor(Math.random() * 4)].type = 1;
-        this.blocked = []
         //shuffle(this.cards)
     }
 
@@ -92,6 +105,8 @@ class Hand {
             this.blocked.push(this.cards[index])
             this.cards[index] = null;
             return this.blocked[this.blocked.length - 1];
+        }else{
+            return null
         }
     }
 
@@ -125,7 +140,8 @@ class Player extends Room_Player{
     }
 
     pushCard(index) {
-        return this.hand.block(index);
+        if(this.hand.block(index)==null)
+         return null
     }
     raise(nb) {
         bet += nb;

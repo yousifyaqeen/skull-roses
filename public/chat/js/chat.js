@@ -420,10 +420,11 @@ socket.on("getKey", function (key, id) {
         buttonStart.dataset.index = id;
         buttonStart
             .addEventListener("click", function () {
+                socket.emit("startGame", id);
+
                 socket.emit("getHand", id);
                 socket.emit("getTable", id);
                 buttonStart.style.display = "none"
-                socket.emit("startGame", id);
             });
 
         div.appendChild(title)
@@ -467,7 +468,6 @@ socket.on("getKey", function (key, id) {
 
 socket.on("Gameliste", function(roomId, players) {
     if (connected) {
-    console.log(players)
     if (rooms[roomId] != null) {
         /* var checkIsReady =  setInterval(function(main){
               var main = document.querySelector("div[data-game_id='"+roomId+"'] div[id='thingsAside']")
@@ -488,6 +488,8 @@ socket.on("Gameliste", function(roomId, players) {
 });
 
 socket.on("giveHand", function(faction, hand, roomId) {
+    console.log(hand)
+
     var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='myHand']");
     if(game != null){
         game.innerHTML = ""
@@ -495,9 +497,13 @@ socket.on("giveHand", function(faction, hand, roomId) {
         playerDiv.dataset.playerId = username;
         playerDiv.classList = "player"
         hand.forEach(c => {
+            if(c!=null){
             var card = document.createElement("div")
             card.dataset.cardIndex = c.id;
             card.classList = "card"
+            card.addEventListener("click",function(){
+                playCard(roomId,c.id);
+            })
             if (c.type == 0)
                 card.innerHTML =
                     '<div class="flip-card-inner">' +
@@ -510,6 +516,7 @@ socket.on("giveHand", function(faction, hand, roomId) {
                     '<div class="flip-card-back skull"></div></div>'
 
             playerDiv.appendChild(card);
+            }
         });
         playerDiv.addEventListener('click', function(){
             console.log(" inde x: " + playerDiv.dataset.playerId )
@@ -518,6 +525,9 @@ socket.on("giveHand", function(faction, hand, roomId) {
     }
 });
 
+function playCard(roomId,index){
+    socket.emit("playCard",roomId, index)
+} 
 socket.on("giveTable", function(onTable, roomId) {
     var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='table']");
     if(game != null){
