@@ -4,8 +4,6 @@
 * in the second case we refuse the connection
 */
 
-/*** Gestion des clients et des connexions ***/
-var clients = {};       // id -> socket
 
 function log(message){
     var options = {year: 'numeric', month: 'long', day: 'numeric' ,hour : 'numeric',minute: 'numeric'  ,second: 'numeric' };
@@ -29,15 +27,6 @@ app.use(express.static('public'));
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/public/chat/chat.html');
 });
-app.get('/skullandroses', function(req, res) {
-    res.sendFile(__dirname + '/public/game/gameServer.html');
-});
-
-app.post('/skullandroses', function (req, res) {
-    log(req.body)
-  })
-
-var Room = require('./Room.js');
 
 var Game = require('./SkullAndRoses.js')
 
@@ -50,8 +39,9 @@ function addToHistory(message){
     history.push(message)
 
 }
+/*** Gestion des clients et des connexions ***/
+var clients = {};       // id -> socket
 
-var rooms =[];
 var games =[];
 
 // Quand un client se connecte, on le note dans la console
@@ -72,7 +62,7 @@ io.on('connection', function (socket) {
         if(key!=null)
             {
                 //if the key is provided we check if we can find the room
-                rooms.forEach
+                games.forEach
                 (
                     r=>{
                         if(r.roomKey==key)
@@ -84,7 +74,7 @@ io.on('connection', function (socket) {
         if(room==null){
                 var roomId =  Math.random().toString(10).substr(2, 5);
                 room= new Game(io,roomId,true,null);
-                rooms.push(room)
+                games.push(room)
             }
             log(room)
             log(room.players)
@@ -110,21 +100,17 @@ io.on('connection', function (socket) {
         while (clients[id]) {
             id = id + "(1)";
         }
-
         currentID = id;
         clients[currentID] = socket;
-
         log("Nouvel utilisateur : " + currentID);
         // envoi d'un message de bienvenue à ce client
         socket.emit("bienvenue", id);
         // envoi aux autres clients
-
         socket.broadcast.emit("message", { from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() } );
-
         addToHistory({ from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() })
         // envoi de la nouvelle liste à tous les clients c{ from: null, to: null, text: currentID + " a rejoint la discussion", date: Date.now() }onnectés
         io.sockets.emit("liste", Object.keys(clients));
-        clients[currentID].emit("history", history);
+        //clients[currentID].emit("history", history);
     });
 
     /**
@@ -150,7 +136,7 @@ io.on('connection', function (socket) {
         }*/
         if(msg.from !=null){
             log(" --> broadcast");
-            rooms.forEach(room => {
+            games.forEach(room => {
                 room.sendMessage(msg)
             });
             addToHistory(msg)
@@ -168,7 +154,7 @@ io.on('connection', function (socket) {
         log("invite recieved");
         if(clients[sender]==socket){
             log(" --> Invitation is being sent");
-            rooms.forEach(room => {
+            games.forEach(room => {
                 if(room.roomId==roomId)
                 room.sendInvitation(sender,players,roomKey)
             });
@@ -244,7 +230,7 @@ io.on('connection', function (socket) {
         // si client était identifié
         if (currentID) {
             // envoi de l'information de déconnexion
-            rooms.forEach(room => {
+            games.forEach(room => {
                 room.removePlayer( currentID)
             });
             addToHistory({ from: null, to: null, text: currentID + " vient de se déconnecter de l'application", date: Date.now() })
@@ -268,13 +254,18 @@ io.on('connection', function (socket) {
         log("Client déconnecté");
     });
 
-    socket.on("startGame", function(roomId, userlist){
-        var g = new Game(roomId, userlist)
-        games.push(g)
+    socket.on("startGame", function(roomId){
+        games.forEach(g => {
+            //console.log(g)
+
+            if(g.roomId == roomId){
+                g.startRoundinit()
+            }
+        });
     });
 
     socket.on("getHand", function(roomId){
-        rooms.forEach(g => {
+        games.forEach(g => {
             if(g.roomId == roomId){
                 g.getHand()
             }

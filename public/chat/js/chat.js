@@ -422,9 +422,9 @@ socket.on("getKey", function (key, id) {
         buttonStart.dataset.index = id;
         buttonStart
             .addEventListener("click", function () {
-
-                socket.emit("startGame", id, room.playerList);
                 socket.emit("getHand", id);
+
+                socket.emit("startGame", id);
             });
 
         div.appendChild(title)
@@ -497,6 +497,7 @@ socket.on("giveHand", function(faction, hand, roomId) {
         playerDiv.classList = "player"
         hand.forEach(c => {
             console.log("in for each");
+            console.log(c)
             var card = document.createElement("div")
             card.dataset.cardIndex = c.id;
             card.classList = "card"

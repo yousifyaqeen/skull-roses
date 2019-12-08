@@ -29,9 +29,11 @@ class SkullAndRosesGame extends Room {
 
 
     startRoundinit() {
-        this.players.forEach(pl => {
-            console.log(pl.pushCard(0));
-        })
+        var players = this.players
+        Object.keys(this.players).map(function(clientId, index) {
+            //console.log(players[clientId].pushCard(0));
+        });
+        this.getHand()
     }
 
     startRound(playerIndex) {
@@ -48,7 +50,6 @@ class SkullAndRosesGame extends Room {
         var roomId = this.roomId
         Object.keys(players).map(function(clientId, index) {
             var p = players[clientId]
-            console.log(p)
             // io.to(this.roomId).emit("giveHand",p.faction, p.hand.cards, this.roomId)
             p.socket.emit("giveHand",p.faction, p.hand.cards,roomId)
             // io.sockets.emit("giveHand",p.faction, p.hand.cards, this.roomId)
@@ -59,6 +60,7 @@ class SkullAndRosesGame extends Room {
 class Hand {
 
     constructor() {
+        this.blocked = []
         this.cards = [{ id: 0, type: 0 }, { id: 1, type: 0 }, { id: 2, type: 0 }, { id: 3, type: 0 }]
         this.cards[Math.floor(Math.random() * 4)].type = 1;
         //shuffle(this.cards)
