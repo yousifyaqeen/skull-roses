@@ -87,7 +87,12 @@ io.on('connection', function (socket) {
         //add player to room
         room.addPlayer(socket,id);
         //log to server terminal
-        log("new User connected : " + id + " to Room " + room.getId() + " key " + room.getKey());
+        if(!room.inGame)
+            log("new User connected : " + id + " to Room " + room.getId() + " key " + room.getKey());
+        else{
+            log("The room is in game, impossible to join");
+            clients[id].emit("message", { from: null, to: null,roomId:room.roomId, text: "Impossible de rejoindre une partie en cours", date: Date.now() });
+        }
         //add message to server history
     });
 
@@ -157,6 +162,7 @@ io.on('connection', function (socket) {
             games.forEach(room => {
                 if(room.roomId==roomId)
                 room.sendInvitation(sender,players,roomKey)
+
             });
         }else{
         log("someone is trying to cheat ");
@@ -253,7 +259,6 @@ io.on('connection', function (socket) {
         }
         log("Client déconnecté");
     });
-
     socket.on("startGame", function(roomId){
         games.forEach(g => {
             //console.log(g)
@@ -262,6 +267,7 @@ io.on('connection', function (socket) {
                 g.startRoundinit()
             }
         });
+
     });
 
     socket.on("getHand", function(roomId){

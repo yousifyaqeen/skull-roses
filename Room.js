@@ -22,6 +22,7 @@ class Room {
         this.roomKey = null;
         this.players = {}
         this.Room(roomId, isPrivate);
+        this.inGame = false;
     }
 
     Room(roomId, isPrivate) {
@@ -44,13 +45,15 @@ class Room {
     * @param string the player id
     */
     addPlayer(socket, clientId) {
-        socket.emit("getKey", this.roomKey, this.roomId)
-        this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
-        this.players[clientId] = new Player(socket);
-        this.players[clientId].socket.join(this.roomId);
-        sendWelcomeMessage(clientId);
-        sendPlayerList() ;
-        
+        if(!this.inGame){
+            socket.emit("getKey", this.roomKey, this.roomId)
+            this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
+            this.players[clientId] = new Player(socket);
+            this.players[clientId].socket.join(this.roomId);
+            sendWelcomeMessage(clientId);
+            sendPlayerList() ;
+        }
+
     }
 
     sendWelcomeMessage(clientId) {
@@ -106,15 +109,6 @@ class Room {
                 log("the sender has the wrong key");
         }
 
-    }
-    //todo fix invitations
-    sendInvitation(sender, players, roomKey) {
-        players.forEach(p => {
-            if (clients[p] != null) {
-                log("sent invitation")
-                clients[p].emit("invitation", { date: Date.now(), from: sender, game_name: "SkullAndRoses", key: roomKey })
-            }
-        });
     }
 };
 
