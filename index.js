@@ -25,7 +25,7 @@ var io = require('socket.io').listen(server);
 app.use(express.static('public'));
 // set up to
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/public/chat/chat.html');
+    res.sendFile(__dirname + '/public/chat.html');
 });
 
 var Game = require('./SkullAndRoses.js')

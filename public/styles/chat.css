@@ -1,0 +1,441 @@
+body {
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
+}
+* {
+    box-sizing: border-box;
+}
+body > div {
+    box-shadow: -10px 10px 20px #A0A0A0;
+    border: solid 1px #A0A0A0;
+}
+
+.content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    height: 90%;
+    width: 90%;
+    background-color: beige;
+    padding: 10px;
+}
+.content h2, .content h3 {
+    position: absolute;
+    background-color: inherit;
+    height: 22px;
+    padding: 5px;
+    line-height: 16px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px 5px 0 0;
+    border-top: inherit;
+    border-left: inherit;
+    border-right: inherit;
+}
+.content h2 {
+    top: -35px;
+    left: -1px;
+}
+.content h3 {
+    right: -11px;
+    top: -28px;
+    transform-origin: left center;
+    transform: translateX(100%) rotate(90deg);
+}
+.content #btnSkullGame {
+    right: -11px;
+    top: 150px;
+}
+.content main {
+    float: left;
+    height: 90%;
+    width: 79%;
+    background-color: white;
+    overflow-y: scroll;
+    line-height: 1.2;
+}
+.content main p {
+    line-height: 1;
+    font-size: 16px;
+    margin: 3px;
+}
+.content main .mp {
+    color: darkblue;
+}
+.content main .moi {
+    color: green;
+}
+.content main .system {
+    color: red;
+}
+.content main img {
+    max-width: 50%;
+    vertical-align: text-top;
+}
+
+#thingsAside .mp {
+    color: darkblue;
+}
+#thingsAside  .moi {
+    color: green;
+}
+#thingsAside  .system {
+    color: red;
+}
+#thingsAside  img {
+    max-width: 50%;
+    vertical-align: text-top;
+}
+
+
+/** Pied de zone de chat */
+.content footer {
+    position: absolute;
+    bottom: 0;
+    padding: 7px;
+    width: calc(100% - 20px);
+    background-color: inherit;
+}
+.content footer input {
+    /* height: 22px; */
+    font-size: 15px;
+}
+.content > footer input:first-child {
+    width: calc(100% - 260px);
+    font-size: 12px;
+}
+.content > footer input:last-child {
+    float: right;
+}
+
+.content aside {
+    width: 100%;
+    margin: auto;
+    padding: 5px;
+    background-color: white;
+    line-height: 1;
+    font-size: 14px;
+}
+
+.content aside input {
+    margin: 5px;
+}
+
+.content #asideGame {
+    height: calc(20% - 30px);
+    text-align: center;
+}
+
+.content #asideChat {
+    height: calc(80% - 30px);
+}
+
+.content #thingsAside {
+    float: right;
+    width: 19%;
+    height: 90%;
+    float: right;
+    padding: 5px;
+    background-color: white;
+    line-height: 1;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content #thingsAside h2 {
+    display: contents;
+}
+
+/**
+ * Style pour les émoticones
+ */
+.emoji {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-image: url("../images/emoji.png");
+    background-size: 72px 72px;
+}
+.rire {
+    background-position: -4px -4px;
+}
+.zzz {
+    background-position: -28px -4px;
+}
+.love {
+    background-position: -52px -4px;
+}
+.holala {
+    background-position: -4px -28px;
+}
+.grrr {
+    background-position: -28px -28px;
+}
+.triste {
+    background-position: -52px -28px;
+}
+.sourire {
+    background-position: -4px -52px;
+}
+.banane {
+    background-position: -28px -52px;
+}
+.malade {
+    background-position: -52px -52px;
+}
+
+
+body > div, body > input[type=radio] {
+    display: none;
+}
+
+input[type=radio]:checked + div {
+    display: block;
+}
+
+
+#logScreen {
+    background: rgba(200, 200, 200, 0.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}
+#logScreen > div {
+    text-align: center;
+    width: 300px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: white;
+    transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    border: solid 2px #000;
+    border-radius: 10px;
+    box-shadow: 10px 10px 10px #000;
+}
+#logScreen input, #bcImages input {
+    padding: 3px;
+    font-size: 80%;
+    margin: 10px;
+}
+
+#bcImage {
+    width: 400px;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: darkgrey;
+    border: solid 1px #333;
+    box-shadow: 10px 10px 10px #000;
+    border-radius: 5px;
+}
+#bcImage input[type=text] {
+    margin: 10px;
+    width: calc(100% - 120px);
+}
+#bcImage #btnFermer {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#bcImage #bcResults {
+    height: calc(100% - 80px);
+    background-color: white;
+    overflow: scroll;
+}
+#bcImage #bcResults {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-evenly;
+}
+#bcResults img {
+    width: 190px;
+    margin: 2px;
+    height: auto;
+    cursor: pointer;
+    align-self: center;
+}
+
+#asideGame {
+    /* display: none; */
+}
+
+#SkullAndRoses {
+    display:none;
+}
+
+#generalchat{
+    display: contents;
+}
+
+.selectBox input {
+    padding: 3px;
+    font-size: 80%;
+    margin: 10px;
+}
+
+.selectBox {
+    width: 400px;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: darkgrey;
+    border: solid 1px #333;
+    box-shadow: 10px 10px 10px #000;
+    border-radius: 5px;
+}
+.selectBox h2 {
+    margin: 10px;
+    width: 100%;
+    position: static;
+}
+.selectBox #selectGuestbtnFermer,#selectRoombtnFermer {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.selectBox .selectBoxResult {
+    height: calc(100% - 80px);
+    background-color: white;
+    overflow: scroll;
+}
+.selectBox .selectBoxResult {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-evenly;
+}
+
+.selectBoxResult {
+    width: 98%;
+    height: auto;
+    cursor: pointer;
+    align-self: center;
+}
+
+#tabs input[type=button] {
+    margin-bottom: 10px;
+    /* background-color: cornflowerblue; */
+    /* border-color: cornflowerblue; */
+}
+
+
+
+/* --------------- GAME --------------------- */
+
+skullandroses {
+    overflow: hidden;
+}
+
+#myHand .player {
+    /* display: flex; */
+    /* flex: auto; */
+    margin-top: auto;
+    overflow: visible;
+}
+
+.player{
+    width: 20vh;
+    height: 20vh;
+    overflow: hidden;
+}
+
+
+
+/* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
+.card {
+    /* background-color: transparent; */
+    background-image: url(../images/carre_roses.png);
+    width: 100%;
+    height: 100%;
+    perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+.card-hand {
+    background-color: transparent;
+    width: 20vh;
+    height: 20vh;
+    perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+/* Do an horizontal flip when you move the mouse over the flip box container */
+.card:hover .flip-card-inner {
+transform: rotateY(180deg);
+}
+
+/* Position the front and back side */
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+/* Style the front side (fallback if image is missing) */
+.flip-card-front {
+    background-image: url(../images/amazons.png);
+}
+.amazons {
+    background-image: url(../images/amazons.png);
+}
+.carnivorous {
+    background-image: url(../images/carnivorous.png);
+}
+.cyborgs {
+    background-image: url(../images/cyborgs.png);
+}
+.indians {
+    background-image: url(../images/indians.png);
+}
+.jokers {
+    background-image: url(../images/jokers.png);
+}
+.swallows {
+    background-image: url(../images/swallows.png);
+}
+
+
+/* Style the back side */
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+.roses {
+    background-image: url(../images/recto_roses.png);
+}
+.skull {
+    background-image: url(../images/recto_skull.png);
+}
+
+#myHand {
+    -webkit-writing-mode: vertical-lr;
+}
