@@ -48,11 +48,18 @@ class SkullAndRosesGame extends Room {
         var roomId = this.roomId
         Object.keys(players).map(function(clientId, index) {
             var p = players[clientId]
-            console.log(p)
-            // io.to(this.roomId).emit("giveHand",p.faction, p.hand.cards, this.roomId)
             p.socket.emit("giveHand",p.faction, p.hand.cards,roomId)
-            // io.sockets.emit("giveHand",p.faction, p.hand.cards, this.roomId)
         });
+    }
+
+    getTable(){
+        var players = this.players
+        var onTable = []
+        Object.keys(players).map(function(clientId, index) {
+            var p = players[clientId]
+            onTable.push({name: p.name, faction: p.faction, blocked: p.hand.blocked})
+        });
+        this.io.to(this.roomId).emit("giveTable", onTable, this.roomId)
     }
 };
 
@@ -61,6 +68,7 @@ class Hand {
     constructor() {
         this.cards = [{ id: 0, type: 0 }, { id: 1, type: 0 }, { id: 2, type: 0 }, { id: 3, type: 0 }]
         this.cards[Math.floor(Math.random() * 4)].type = 1;
+        this.blocked = []
         //shuffle(this.cards)
     }
 

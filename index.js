@@ -290,7 +290,14 @@ io.on('connection', function (socket) {
                 g.getHand()
             }
         });
+    });
 
+    socket.on("getTable", function(roomId){
+        rooms.forEach(g => {
+            if(g.roomId == roomId){
+                g.getTable()
+            }
+        });
     });
 
 });
