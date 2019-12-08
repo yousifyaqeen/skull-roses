@@ -173,10 +173,10 @@ io.on('connection', function (socket) {
         log("invite recieved");
         if(clients[sender]==socket){
             log(" --> Invitation is being sent");
-            rooms.forEach(room => {
-                if(room.roomId==roomId)
-                room.sendInvitation(sender,players,roomKey)
-            });
+                players.forEach(p => {
+                    if (clients[p] != null)
+                        clients[p].emit("invitation", { date: Date.now(), from: sender, game_name: "SkullAndRoses", key: roomKey })
+                });
         }else{
         log("someone is trying to cheat ");
         }

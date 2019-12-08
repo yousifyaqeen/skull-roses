@@ -110,15 +110,6 @@ class Room {
         }
 
     }
-    //todo fix invitations
-    sendInvitation(sender, players, roomKey) {
-        players.forEach(p => {
-            if (clients[p] != null) {
-                log("sent invitation")
-                clients[p].emit("invitation", { date: Date.now(), from: sender, game_name: "SkullAndRoses", key: roomKey })
-            }
-        });
-    }
 };
 
 

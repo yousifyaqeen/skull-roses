@@ -322,27 +322,28 @@ socket.on("message", function (msg) {
 });
 
 socket.on("invitation", function (msg) {
+    console.log("socket invitation received");
     if (connected) {
-    var date = new Date(msg.date);
-    var dateString = date.getHours() + ":"
-    dateString += date.getMinutes() + ":"
-    dateString += date.getSeconds()
+        var date = new Date(msg.date);
+        var dateString = date.getHours() + ":"
+        dateString += date.getMinutes() + ":"
+        dateString += date.getSeconds()
 
-    var childNode = document.createElement("p")
-    childNode.innerText = dateString + " - ";
-    if (msg.from == null)
-        return;
-    childNode.innerText += msg.from
-    childNode.innerText += " Invited you to play " + msg.game_name;
-    var invitationUrl = document.createElement("a")
-    invitationUrl.innerText = "Click to Join"
-    invitationUrl.addEventListener("click", function () {
-        joinGame(msg.key)
-    })
+        var childNode = document.createElement("p")
+        childNode.innerText = dateString + " - ";
+        if (msg.from == null)
+            return;
+        childNode.innerText += msg.from
+        childNode.innerText += " Invited you to play " + msg.game_name;
+        var invitationUrl = document.createElement("a")
+        invitationUrl.innerText = "Click to Join"
+        invitationUrl.addEventListener("click", function () {
+            joinGame(msg.key)
+        })
 
-    childNode.appendChild(invitationUrl);
-    document.querySelector("#generalchat main").appendChild(childNode)
-}
+        childNode.appendChild(invitationUrl);
+        document.querySelector("#generalchat main").appendChild(childNode)
+    }
 });
 
 socket.on("liste", function (msg) {
@@ -422,7 +423,7 @@ socket.on("getKey", function (key, id) {
         buttonStart.dataset.index = id;
         buttonStart
             .addEventListener("click", function () {
-                
+
                 socket.emit("startGame", id, room.playerList);
                 socket.emit("getHand", id);
             });
