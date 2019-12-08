@@ -49,6 +49,7 @@ class Room {
      this.roomKey = null;
      this.players = {};
      this.Room(roomId,isPrivate);
+     this.inGame = false;
     }
 
     Room(roomId,isPrivate){
@@ -67,7 +68,8 @@ class Room {
     * @param string the player id
     */
     addPlayer(socket,clientId){
-        socket.emit("getKey",this.roomKey,this.roomId)
+        if(!this.inGame){
+            socket.emit("getKey",this.roomKey,this.roomId)
             io.to(this.roomId).emit("messageGame",this.roomId, { from: null, to: null,roomId:this.roomId ,text: clientId + " a rejoint le jeu", date: Date.now() } );
             this.players[clientId] =  socket;
             this.players[clientId].join(this.roomId);
@@ -75,6 +77,7 @@ class Room {
             // todo change get key
             this.players[clientId].emit("bienvenue", {clientId : clientId,roomKey: this.roomKey});
             io.to(this.roomId).emit("Gameliste", this.roomId,Object.keys(this.players));
+        }
     }
 
     /** add a player to the room
@@ -132,7 +135,6 @@ class Room {
 };
 
 class Game {
-
     constructor(roomId, userlist){
         this.roomId = roomId;
         this.players = []
@@ -145,7 +147,7 @@ class Game {
     addPlayer(pseudo) {
         if(this.players.length < 7) {
             log("name = " + pseudo);
-            var player = new Player(pseudo, this.factions[this.players.length-1])
+            var player = new Player(pseudo, this.factions[this.players.length])
             this.players.push(player);
             // var game = document.getElementById("table");
             // var playerDiv = document.createElement("div");
@@ -345,7 +347,12 @@ io.on('connection', function (socket) {
         //add player to room
         room.addPlayer(socket,id);
         //log to server terminal
-        log("new User connected : " + id + " to Room " + room.getId() + " key " + room.getKey());
+        if(!room.inGame)
+            log("new User connected : " + id + " to Room " + room.getId() + " key " + room.getKey());
+        else{
+            log("The room is in game, impossible to join");
+            clients[id].emit("message", { from: null, to: null,roomId:room.roomId, text: "Impossible de rejoindre une partie en cours", date: Date.now() });
+        }
         //add message to server history
     });
 
@@ -518,6 +525,11 @@ io.on('connection', function (socket) {
 
     socket.on("startGame", function(roomId, userlist){
         var g = new Game(roomId, userlist)
+        rooms.forEach(r => {
+            if(r.roomId == roomId){
+                r.inGame = true;
+            }
+        });
         games.push(g)
     });
 

@@ -421,7 +421,7 @@ socket.on("getKey", function (key, id) {
         buttonStart.dataset.index = id;
         buttonStart
             .addEventListener("click", function () {
-
+                
                 socket.emit("startGame", id, room.playerList);
                 socket.emit("getHand", id);
             });
@@ -455,6 +455,7 @@ socket.on("getKey", function (key, id) {
         createGame.appendChild(button);
 
         var mainGame = document.querySelector("div[data-game_id='" + id + "']>main")
+        mainGame.style.overflow = "hidden"
         var divGame = document.createElement("div")
         divGame.id = "table"
         mainGame.appendChild(divGame)

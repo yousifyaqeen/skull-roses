@@ -342,8 +342,18 @@ input[type=radio]:checked + div {
 
 /* --------------- GAME --------------------- */
 
-.player{
+skullandroses {
+    overflow: hidden;
+}
 
+#myHand .player {
+    /* display: flex; */
+    /* flex: auto; */
+    margin-top: auto;
+    overflow: visible;
+}
+
+.player{
     width: 20vh;
     height: 20vh;
     overflow: hidden;
@@ -394,6 +404,25 @@ transform: rotateY(180deg);
 .flip-card-front {
     background-image: url(../images/amazons.png);
 }
+.amazons {
+    background-image: url(../images/amazons.png);
+}
+.carnivorous {
+    background-image: url(../images/carnivorous.png);
+}
+.cyborgs {
+    background-image: url(../images/cyborgs.png);
+}
+.indians {
+    background-image: url(../images/indians.png);
+}
+.jokers {
+    background-image: url(../images/jokers.png);
+}
+.swallows {
+    background-image: url(../images/swallows.png);
+}
+
 
 /* Style the back side */
 .flip-card-back {
@@ -407,5 +436,5 @@ transform: rotateY(180deg);
 }
 
 #myHand {
-    display: flex;
+    -webkit-writing-mode: vertical-lr;
 }
