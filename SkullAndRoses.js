@@ -13,7 +13,6 @@ class SkullAndRosesGame extends Room {
         this.currentPlayer = 0;
         this.state = 0
         this.onRestart = 0//id of the player that will start the next round
-        this.gameStarted = false; // 
         this.turnDeter = []//store the playing order
         this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
         if (Array.isArray(userlist))
@@ -23,8 +22,7 @@ class SkullAndRosesGame extends Room {
     }
 
     addPlayer(socket, clientId) {
-        console.log("Hello")
-        if ((this.getNumberOfPlayers() < 7) && this.state==0) {
+        if ((this.getNumberOfPlayers() < 7) && this.state == 0) {
             var playerindex = this.getNumberOfPlayers();
             socket.emit("getKey", this.roomKey, this.roomId)
             this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
@@ -39,7 +37,7 @@ class SkullAndRosesGame extends Room {
 
 
     startRoundinit() {
-        if (this.state=0) {
+        if (this.state = 0) {
             this.state = 1;
             this.getTable();
             this.getHand()
@@ -62,7 +60,6 @@ class SkullAndRosesGame extends Room {
         var roomId = this.roomId
         Object.keys(this.players).map(function (clientId, index) {
             var p = this.players[clientId]
-            //console.log("giving hand" + p.hand.cards)
             p.socket.emit("giveHand", p.faction, p.hand.cards, roomId)
         }, this);
     }
@@ -77,7 +74,7 @@ class SkullAndRosesGame extends Room {
     }
 
     playCard(socket, id) {
-        if (this.state < 2 ) {
+        if (this.state < 2) {
             Object.keys(this.players).map(function (clientId, index) {
                 console.log(this.turnDeter[this.currentPlayer] + " " + clientId + " " + this.currentPlayer)
                 if (this.players[clientId].socket == socket && this.turnDeter[this.currentPlayer] == clientId) {
@@ -110,13 +107,14 @@ class SkullAndRosesGame extends Room {
             }
         }, this)
     }
-    bet(socket,amount) {
-        if (this.gameStarted >0) {
+
+    bet(socket, amount) {
+        if (this.state > 0) {
             Object.keys(this.players).map(function (clientId, index) {
                 if (this.players[clientId].socket == socket && this.turnDeter[this.currentPlayer] == clientId) {
                     if (this.state == 2)
-                        this.StartBetting(socket,amount);
-                    else if(this.state>2){
+                        this.StartBetting(socket, amount);
+                    else if (this.state > 2) {
                         console.log(clientId + " betting " + amount)
                         this.players[clientId].raise(amount);
                         this.currentPlayer += 1;
@@ -133,16 +131,15 @@ class SkullAndRosesGame extends Room {
         };
     }
 };
-
+//a players hand 
 class Hand {
-
+    //create a hand , one of the card will be chosen and set to skull 
     constructor() {
         this.blocked = []
         this.cards = [{ id: 0, type: 0 }, { id: 1, type: 0 }, { id: 2, type: 0 }, { id: 3, type: 0 }]
         this.cards[Math.floor(Math.random() * 4)].type = 1;
-        //shuffle(this.cards)
     }
-
+    //reveal the card to all players
     reveal(nb) {
         if (nb <= 0)
             return;
@@ -154,7 +151,7 @@ class Hand {
         }
         return revealed
     }
-
+    //put the card on the table
     block(index) {
         if (this.cards[index] != null) {
             this.blocked.push(this.cards[index])
@@ -164,7 +161,7 @@ class Hand {
             return null
         }
     }
-
+    //remove the card from the table
     unblock() {
         this.cards.forEach(card => {
             if (card == null) {

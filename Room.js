@@ -4,12 +4,14 @@
 * could be extended by games class to create a game
 * room or could be used to create chat rooms
 */
+
+//log a message with date and time
 function log(message) {
     var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
     var date = new Date(Date.now())
     console.log(date.toLocaleString(options) + " : " + message)
 }
-
+// a player socket container
 class Player {
     constructor(socket) {
         this.socket = socket;
@@ -20,11 +22,10 @@ class Room {
 
     constructor(io, roomId, isPrivate) {
         this.roomId = null;
-        this.io = io
+        this.io = io//store the connection socket
         this.roomKey = null;
-        this.players = {}
+        this.players = {}//store the players
         this.Room(roomId, isPrivate);
-        this.inGame = false;
     }
 
     Room(roomId, isPrivate) {
@@ -38,7 +39,7 @@ class Room {
 
     }
 
-    getNumberOfPlayers(){
+    getNumberOfPlayers() {
         return Object.keys(this.players).length
     }
     /** add a player to the room
@@ -47,15 +48,12 @@ class Room {
     * @param string the player id
     */
     addPlayer(socket, clientId) {
-        if(!this.inGame){
-            socket.emit("getKey", this.roomKey, this.roomId)
-            this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
-            this.players[clientId] = new Player(socket);
-            this.players[clientId].socket.join(this.roomId);
-            sendWelcomeMessage(clientId);
-            sendPlayerList() ;
-        }
-
+        socket.emit("getKey", this.roomKey, this.roomId)
+        this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
+        this.players[clientId] = new Player(socket);
+        this.players[clientId].socket.join(this.roomId);
+        sendWelcomeMessage(clientId);
+        sendPlayerList();
     }
 
     sendWelcomeMessage(clientId) {
@@ -81,12 +79,11 @@ class Room {
             // sendPlayerList()
         }
     }
-    /** return room key  */
+    /** return  room key  */
     getKey() {
         return this.roomKey;
     }
     /** return room id  */
-
     getId() {
         return this.roomId;
     }
@@ -113,7 +110,5 @@ class Room {
 
     }
 };
-
-
 
 module.exports = { Room, Player };
