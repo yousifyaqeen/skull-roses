@@ -1,4 +1,3 @@
-
 var roomModuels = require("./Room.js")
 var Room = roomModuels.Room
 var Room_Player = roomModuels.Player
@@ -8,6 +7,7 @@ class SkullAndRosesGame extends Room {
     constructor(io, roomId, isPrivate, userlist) {
         super(io, roomId, isPrivate)
         this.currentPlayer = 0;
+        this.state = 0
         this.gameStarted = false;
         this.turnDeter = []//store the playing order
         this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
@@ -25,6 +25,7 @@ class SkullAndRosesGame extends Room {
             this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
             this.players[clientId] = new Player(playerindex, socket, clientId, this.factions[this.getNumberOfPlayers()]);
             this.players[clientId].socket.join(this.roomId);
+            this.turnDeter.push(clientId);
             this.sendWelcomeMessage(clientId);
             this.sendPlayerList();
         }
@@ -36,58 +37,58 @@ class SkullAndRosesGame extends Room {
         if (!this.gameStarted) {
             this.inGame = true;
             //startRound(0);
+            this.state = 1;
             this.gameStarted = true;
             this.getTable();
             this.getHand()
             this.io.to(this.roomId).emit("beginMatch",this.roomId);
-
         }
     }
 
-    playRound(){
 
-    }
+    startRound(index) {
+        var tmp = []
+        tmp = this.turnDeter.splice(index);
 
-    startRound(clientId) {
+        tmp.concat(this.turnDeter.splice(0, index - 1));
 
-        var tmp = [];
-        tmp = this.players.splice(playerIndex);
-        tmp.concat(this.players.splice(0, playerIndex - 1));
-        console.log(tmp);
+        this.turnDeter = tmp;
         return tmp;
 
     }
 
-
-
     getHand() {
-        var players = this.players
         var roomId = this.roomId
-        Object.keys(players).map(function (clientId, index) {
-            var p = players[clientId]
-            console.log("giving hand" + p.hand.cards)
+        Object.keys(this.players).map(function (clientId, index) {
+        var p = this.players[clientId]
+            //console.log("giving hand" + p.hand.cards)
             p.socket.emit("giveHand", p.faction, p.hand.cards, roomId)
-        });
+        },this);
     }
 
     getTable() {
-        var players = this.players
         var onTable = []
-        Object.keys(players).map(function (clientId, index) {
-            var p = players[clientId]
+        Object.keys(this.players).map(function (clientId, index) {
+            var p = this.players[clientId]
             onTable.push({ name: p.name, faction: p.faction, blocked: p.hand.blocked })
-        });
+        },this);
         this.io.to(this.roomId).emit("giveTable", onTable, this.roomId)
     }
 
     playCard(socket, id) {
         if (this.gameStarted) {
-            var players = this.players
-            Object.keys(players).map(function (clientId, index) {
-                if (players[clientId].socket == socket) {
-                    players[clientId].pushCard(id);
+            Object.keys(this.players).map(function (clientId, index) {
+                console.log(this.turnDeter[this.currentPlayer] + " "+ clientId + " " + this.currentPlayer )
+                if (this.players[clientId].socket == socket && this.turnDeter[this.currentPlayer] == clientId ) {
+                    this.players[clientId].pushCard(id);
+                    this.currentPlayer+=1;
+                    if( !this.turnDeter[this.currentPlayer]){
+                        console.log("shit")
+                        this.startRound(0)
+                        this.currentPlayer = 0;
+                    }
                 }
-            })
+            },this)
             this.getTable()
             this.getHand()
         }
