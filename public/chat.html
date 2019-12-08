@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chat pour les L3</title>
+    <link rel="stylesheet" href="./styles/chat.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/chat.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" href="./styles/bootstrap.min.css" >
+    <link rel="stylesheet" href="./styles/chat.css">
+</head>
+
+<body>
+    <input type="radio" name="btnScreen" id="radio1" checked>
+    <div id="logScreen">
+        <div id="connexion">
+            <p>Choisissez votre pseudo : <br>
+            <input type="text" id="pseudo" placeholder="Tapez ici votre pseudo" size="30">
+            <input type="button" value="Se connecter" id="btnConnecter">
+            </p>
+        </div>
+    </div>
+    <input type="radio" name="btnScreen" id="radio2">
+    <div id="content" class="content">
+        <!-- <h2>Chat des L3 - <span id="login"></span></h2> -->
+        <!-- <h3 id="h3Client">Clients connectés</h3>
+        <h3 id="h3Skull_game">Skull & Roses</h3> -->
+        <div id="tabs">
+            <input type="button" value="Chat Général" class="btn btn-primary btn-lg" id="btnGeneralChat">
+        </div>
+
+        <div id="generalchat" class="content">
+            <div id="thingsAside">
+                <h2>Client connectés</h2>
+                <aside id="asideChat">
+                </aside>
+                <h2>Play : Skull & Roses</h2>
+                <aside id="asideGame">
+                    <input type="button" value="Héberger une partie" id="btnHeberger" class="btn btn-primary btn-sm">
+                    <input type="button" value="Inviter des ami(e)s" id="btnInviter" class="btn btn-primary btn-sm">
+                </aside>
+            </div>
+            <main>
+            </main>
+        </div>
+
+        <footer>
+            <input type="text" id="monMessage">
+            <input type="button" value="Envoyer" id="btnEnvoyer" class="btn btn-primary btn-lg">
+            <input type="button" value="Image" id="btnImage" class="btn btn-primary btn-lg">
+            <input type="button" value="Quitter" id="btnQuitter" class="btn btn-primary btn-lg">
+        </footer>
+
+        <div id="bcImage" style="display: none;">
+            <header>
+                <input type="text" id="recherche" placeholder="Tapez ici le texte de votre recherche">
+                <input type="button" value="Recherche" id="btnRechercher">
+            </header>
+            <div id="bcResults"></div>
+            <footer><input type="button" value="Fermer" id="btnFermer"></footer>
+        </div>
+        <div id="selectRoom"  class="selectBox" style="display: none;">
+            <header>
+                <h2>Sélectionnez un table</h2>
+            </header>
+            <div id="selectRoomResult" class="selectBoxResult"></div>
+            <footer><input type="button" value="Fermer" id="selectRoombtnFermer"><input type="button" value="Selectionner" id="selectRoombtnSelect"></footer>
+        </div>
+
+        <div id="selectGuest"  class="selectBox" style="display: none;">
+            <header>
+                <h2>Sélectionnez un maximum de 5 invités</h2>
+                <!-- <input type="text" id="recherche" placeholder="Tapez ici le texte de votre recherche"> -->
+                <!-- <input type="button" value="Recherche" id="btnRechercher"> -->
+            </header>
+            <div id="selectGuestResult" class="selectBoxResult"></div>
+            <footer><input type="button" value="Fermer" id="selectGuestbtnFermer"><input type="button" value="Inviter" id="selectGuestbtnSelect"></footer>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
