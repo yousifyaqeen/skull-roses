@@ -16,7 +16,7 @@ class Room {
     constructor(roomKey, roomId) {
         this.playerList.push(username)
         this.roomKey = roomKey
-        this.roomId = roomId    
+        this.roomId = roomId
     }
 }
 //holds all the game rooms except the general chat
@@ -268,7 +268,7 @@ function main() {
 
 function sendInvitation(usersToInvite, roomId) {
     if (usersToInvite.length < 6)
-        socket.emit("invite",username, usersToInvite, roomId, rooms[roomId].roomKey)
+        socket.emit("invite", username, usersToInvite, roomId, rooms[roomId].roomKey)
 }
 
 function joinGame(key) {
@@ -288,34 +288,34 @@ socket.on("bienvenue", function (msg) {
 
 socket.on("message", function (msg) {
     if (connected) {
-    var date = new Date(msg.date);
-    var dateString = date.getHours() + ":"
-    dateString += date.getMinutes() + ":"
-    dateString += date.getSeconds()
-    var childNode = document.createElement("p")
-    childNode.innerText = dateString + " - ";
-    if (msg.from != null) {
-        if (msg.from == username) {
-            childNode.setAttribute("class", "moi")
+        var date = new Date(msg.date);
+        var dateString = date.getHours() + ":"
+        dateString += date.getMinutes() + ":"
+        dateString += date.getSeconds()
+        var childNode = document.createElement("p")
+        childNode.innerText = dateString + " - ";
+        if (msg.from != null) {
+            if (msg.from == username) {
+                childNode.setAttribute("class", "moi")
+            }
+            childNode.innerText += msg.from
+        } else {
+            childNode.setAttribute("class", "system")
+            childNode.innerText += "[admin]"
         }
-        childNode.innerText += msg.from
-    } else {
-        childNode.setAttribute("class", "system")
-        childNode.innerText += "[admin]"
-    }
-    if (msg.to != null) {
-        childNode.innerText += "(to " + msg.to + " )"
-        childNode.setAttribute("class", "mp")
-    }
-    childNode.innerText += " : "
-    var patt = /^<img[^>]+src="([^">]+)"/
-    if (msg.text.match(patt) != null) {
-        childNode.innerHTML += msg.text
-    } else
-        childNode.innerText += msg.text
+        if (msg.to != null) {
+            childNode.innerText += "(to " + msg.to + " )"
+            childNode.setAttribute("class", "mp")
+        }
+        childNode.innerText += " : "
+        var patt = /^<img[^>]+src="([^">]+)"/
+        if (msg.text.match(patt) != null) {
+            childNode.innerHTML += msg.text
+        } else
+            childNode.innerText += msg.text
 
-    document.querySelector("#generalchat main").appendChild(childNode)
-}
+        document.querySelector("#generalchat main").appendChild(childNode)
+    }
 });
 
 socket.on("invitation", function (msg) {
@@ -345,54 +345,53 @@ socket.on("invitation", function (msg) {
 
 socket.on("liste", function (msg) {
     if (connected) {
-    var main = document.getElementById("asideChat")
-    main.innerHTML = ""
-    clientListGeneral = msg
-    msg.forEach(element => {
-        var childNode = document.createElement("p")
-        childNode.innerText = element
-        main.appendChild(childNode)
-    });
-}
+        var main = document.getElementById("asideChat")
+        main.innerHTML = ""
+        clientListGeneral = msg
+        msg.forEach(element => {
+            var childNode = document.createElement("p")
+            childNode.innerText = element
+            main.appendChild(childNode)
+        });
+    }
 });
 
 //------------------------------------//
 socket.on("messageGame", function (id, msg) {
     if (connected) {
-    console.log("I got this shit")
-    var date = new Date(msg.date);
-    var dateString = date.getHours() + ":"
-    dateString += date.getMinutes() + ":"
-    dateString += date.getSeconds()
-    var childNode = document.createElement("p")
-    childNode.innerText = dateString + " - ";
-    if (msg.from != null) {
-        if (msg.from == username) {
-            childNode.setAttribute("class", "moi")
+        console.log("I got this shit")
+        var date = new Date(msg.date);
+        var dateString = date.getHours() + ":"
+        dateString += date.getMinutes() + ":"
+        dateString += date.getSeconds()
+        var childNode = document.createElement("p")
+        childNode.innerText = dateString + " - ";
+        if (msg.from != null) {
+            if (msg.from == username) {
+                childNode.setAttribute("class", "moi")
+            }
+            childNode.innerText += msg.from
+        } else {
+            childNode.setAttribute("class", "system")
+            childNode.innerText += "[admin]"
         }
-        childNode.innerText += msg.from
-    } else {
-        childNode.setAttribute("class", "system")
-        childNode.innerText += "[admin]"
-    }
-    if (msg.to != null) {
-        childNode.innerText += "(to " + msg.to + " )"
-        childNode.setAttribute("class", "mp")
-    }
-    childNode.innerText += " : "
-    var patt = /^<img[^>]+src="([^">]+)"/
-    if (msg.text.match(patt) != null) {
-        childNode.innerHTML += msg.text
-    } else
-        childNode.innerText += msg.text
+        if (msg.to != null) {
+            childNode.innerText += "(to " + msg.to + " )"
+            childNode.setAttribute("class", "mp")
+        }
+        childNode.innerText += " : "
+        var patt = /^<img[^>]+src="([^">]+)"/
+        if (msg.text.match(patt) != null) {
+            childNode.innerHTML += msg.text
+        } else
+            childNode.innerText += msg.text
 
-    document.querySelector("div[data-game_id='" + id + "'] div[id='thingsAside']").appendChild(childNode)
+        document.querySelector("div[data-game_id='" + id + "'] div[id='thingsAside']").appendChild(childNode)
     }
 });
 
 
 socket.on("getKey", function (key, id) {
-    console.log("GOT JEy")
     if (connected) {
         var room = new Room(key, id);
 
@@ -424,9 +423,33 @@ socket.on("getKey", function (key, id) {
                 socket.emit("getHand", id);
                 socket.emit("getTable", id);
             });
+        var buttonBet = document.createElement("input");
+        buttonBet.type = "button"
+        buttonBet.value = "Bet/raise"
+        buttonBet.classList = "btn btn-primary btn-lg"
+        buttonBet.id = "btnBet"
+        buttonBet.dataset.index = id;
+        buttonBet.display = 'none'
+        buttonBet
+            .addEventListener("click", function () {
+                socket.emit("placeBet", id);
+            });
+            var buttonFold = document.createElement("input");
 
+        buttonFold.type = "button"
+        buttonFold.value = "Fold"
+        buttonFold.classList = "btn btn-primary btn-lg"
+        buttonFold.id = "btnFold"
+        buttonFold.dataset.index = id;
+        buttonFold.display = 'none'
+        buttonFold
+            .addEventListener("click", function () {
+                socket.emit("fold", id);
+            });
         div.appendChild(title)
         div.appendChild(buttonStart)
+        div.appendChild(buttonBet)
+        div.appendChild(buttonFold)
 
         var main = document.createElement("main")
         game.appendChild(div);
@@ -459,83 +482,83 @@ socket.on("getKey", function (key, id) {
         divGame.id = "table"
         mainGame.appendChild(divGame)
         divGame = document.createElement("div")
-        divGame.id ="myHand"
+        divGame.id = "myHand"
         mainGame.appendChild(divGame)
     }
 });
 
-socket.on("Gameliste", function(roomId, players) {
+socket.on("Gameliste", function (roomId, players) {
     if (connected) {
-    if (rooms[roomId] != null) {
-        /* var checkIsReady =  setInterval(function(main){
-              var main = document.querySelector("div[data-game_id='"+roomId+"'] div[id='thingsAside']")
-              if(main!=null){
-              main.innerHTML = ""
-              msg.forEach(element => {
-                  var childNode = document.createElement("p")
-                  childNode.innerText = element
-                  main.appendChild(childNode)
-                  });
-                  clearInterval(checkIsReady)
-              }
-          }, 500);*/
-        rooms[roomId].playerList = players
+        if (rooms[roomId] != null) {
+            /* var checkIsReady =  setInterval(function(main){
+                  var main = document.querySelector("div[data-game_id='"+roomId+"'] div[id='thingsAside']")
+                  if(main!=null){
+                  main.innerHTML = ""
+                  msg.forEach(element => {
+                      var childNode = document.createElement("p")
+                      childNode.innerText = element
+                      main.appendChild(childNode)
+                      });
+                      clearInterval(checkIsReady)
+                  }
+              }, 500);*/
+            rooms[roomId].playerList = players
 
-    }
+        }
     }
 });
 
-socket.on("giveHand", function(faction, hand, roomId) {
+socket.on("giveHand", function (faction, hand, roomId) {
     console.log(hand)
 
     var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='myHand']");
-    if(game != null){
+    if (game != null) {
         game.innerHTML = ""
         var playerDiv = document.createElement("div");
         playerDiv.dataset.playerId = username;
         playerDiv.classList = "player"
         hand.forEach(c => {
-            if(c!=null){
-            var card = document.createElement("div")
-            card.dataset.cardIndex = c.id;
-            card.classList = "card"
-            card.addEventListener("click",function(){
-                playCard(roomId,c.id);
-            })
-            if (c.type == 0)
-                card.innerHTML =
-                    '<div class="flip-card-inner">' +
-                    '<div class="flip-card-front '+faction+'"></div>' +
-                    '<div class="flip-card-back roses"></div></div>'
-            else
-                card.innerHTML =
-                    '<div class="flip-card-inner">' +
-                    '<div class="flip-card-front '+faction+'"></div>' +
-                    '<div class="flip-card-back skull"></div></div>'
+            if (c != null) {
+                var card = document.createElement("div")
+                card.dataset.cardIndex = c.id;
+                card.classList = "card"
+                card.addEventListener("click", function () {
+                    playCard(roomId, c.id);
+                })
+                if (c.type == 0)
+                    card.innerHTML =
+                        '<div class="flip-card-inner">' +
+                        '<div class="flip-card-front ' + faction + '"></div>' +
+                        '<div class="flip-card-back roses"></div></div>'
+                else
+                    card.innerHTML =
+                        '<div class="flip-card-inner">' +
+                        '<div class="flip-card-front ' + faction + '"></div>' +
+                        '<div class="flip-card-back skull"></div></div>'
 
-            playerDiv.appendChild(card);
+                playerDiv.appendChild(card);
             }
         });
-        playerDiv.addEventListener('click', function(){
-            console.log(" inde x: " + playerDiv.dataset.playerId )
+        playerDiv.addEventListener('click', function () {
+            console.log(" inde x: " + playerDiv.dataset.playerId)
         });
         game.appendChild(playerDiv);
     }
 });
 
-function playCard(roomId,index){
-    socket.emit("playCard",roomId, index)
-} 
+function playCard(roomId, index) {
+    socket.emit("playCard", roomId, index)
+}
 
-socket.on("beginMatch",function(roomId){
+socket.on("beginMatch", function (roomId) {
     console.log("heheheh")
     document.querySelector("div[data-game_id='" + roomId + "'] div[id='thingsAside'] input[id='btnStart'").remove()
 })
-socket.on("giveTable", function(onTable, roomId) {
+socket.on("giveTable", function (onTable, roomId) {
     var game = document.querySelector("div[data-game_id='" + roomId + "'] div[id='table']");
-    if(game != null){
+    if (game != null) {
         game.innerHTML = ""
-        onTable.forEach(p=>{
+        onTable.forEach(p => {
             var playerDiv = document.createElement("div");
             playerDiv.dataset.playerId = p.name;
             playerDiv.classList = "player"
@@ -544,15 +567,15 @@ socket.on("giveTable", function(onTable, roomId) {
                 card.dataset.cardIndex = c.id;
                 card.classList = "card"
                 if (c.type == 0)
-                card.innerHTML =
-                '<div class="flip-card-inner">' +
-                '<div class="flip-card-front '+p.faction+'"></div>' +
-                '<div class="flip-card-back roses"></div></div>'
+                    card.innerHTML =
+                        '<div class="flip-card-inner">' +
+                        '<div class="flip-card-front ' + p.faction + '"></div>' +
+                        '<div class="flip-card-back roses"></div></div>'
                 else
-                card.innerHTML =
-                '<div class="flip-card-inner">' +
-                '<div class="flip-card-front '+p.faction+'"></div>' +
-                '<div class="flip-card-back skull"></div></div>'
+                    card.innerHTML =
+                        '<div class="flip-card-inner">' +
+                        '<div class="flip-card-front ' + p.faction + '"></div>' +
+                        '<div class="flip-card-back skull"></div></div>'
 
                 playerDiv.appendChild(card);
             });

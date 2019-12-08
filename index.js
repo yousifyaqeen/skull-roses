@@ -284,6 +284,20 @@ io.on('connection', function (socket) {
         });
     });
 
+    socket.on("placeBet", function(roomId){
+        games.forEach(g => {
+            if(g.roomId == roomId){
+                g.bet(socket,1)
+            }
+        });
+    });
+    socket.on("fold", function(roomId){
+        games.forEach(g => {
+            if(g.roomId == roomId){
+                g.fold(socket)
+            }
+        });
+    });
     socket.on("getTable", function(roomId){
         games.forEach(g => {
             if(g.roomId == roomId){

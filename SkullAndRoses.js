@@ -1,3 +1,7 @@
+/* this class controls the game 
+ * to start a new game all you need to do is to 
+ * create a new SkullAndRoses instance
+*/
 var roomModuels = require("./Room.js")
 var Room = roomModuels.Room
 var Room_Player = roomModuels.Player
@@ -8,7 +12,8 @@ class SkullAndRosesGame extends Room {
         super(io, roomId, isPrivate)
         this.currentPlayer = 0;
         this.state = 0
-        this.gameStarted = false;
+        this.onRestart = 0//id of the player that will start the next round
+        this.gameStarted = false; // 
         this.turnDeter = []//store the playing order
         this.factions = ['amazons', 'indians', 'carnivorous', 'cyborgs', 'jokers', 'swallows']
         if (Array.isArray(userlist))
@@ -19,7 +24,7 @@ class SkullAndRosesGame extends Room {
 
     addPlayer(socket, clientId) {
         console.log("Hello")
-        if ((this.getNumberOfPlayers() < 7) && !this.gameStarted) {
+        if ((this.getNumberOfPlayers() < 7) && this.state==0) {
             var playerindex = this.getNumberOfPlayers();
             socket.emit("getKey", this.roomKey, this.roomId)
             this.io.to(this.roomId).emit("messageGame", this.roomId, { from: null, to: null, roomId: this.roomId, text: clientId + " a rejoint le jeu", date: Date.now() });
@@ -34,23 +39,20 @@ class SkullAndRosesGame extends Room {
 
 
     startRoundinit() {
-        if (!this.gameStarted) {
-            //startRound(0);
+        if (this.state=0) {
             this.state = 1;
-            this.gameStarted = true;
             this.getTable();
             this.getHand()
-            this.io.to(this.roomId).emit("beginMatch",this.roomId);
+            this.io.to(this.roomId).emit("beginMatch", this.roomId);
         }
     }
 
 
-    startRound(index) {
+    startRound() {
+        var index = this.onRestart;
         var tmp = []
         tmp = this.turnDeter.splice(index);
-
         tmp.concat(this.turnDeter.splice(0, index - 1));
-
         this.turnDeter = tmp;
         return tmp;
 
@@ -59,10 +61,10 @@ class SkullAndRosesGame extends Room {
     getHand() {
         var roomId = this.roomId
         Object.keys(this.players).map(function (clientId, index) {
-        var p = this.players[clientId]
+            var p = this.players[clientId]
             //console.log("giving hand" + p.hand.cards)
             p.socket.emit("giveHand", p.faction, p.hand.cards, roomId)
-        },this);
+        }, this);
     }
 
     getTable() {
@@ -70,27 +72,65 @@ class SkullAndRosesGame extends Room {
         Object.keys(this.players).map(function (clientId, index) {
             var p = this.players[clientId]
             onTable.push({ name: p.name, faction: p.faction, blocked: p.hand.blocked })
-        },this);
+        }, this);
         this.io.to(this.roomId).emit("giveTable", onTable, this.roomId)
     }
 
     playCard(socket, id) {
-        if (this.gameStarted) {
+        if (this.state < 2 ) {
             Object.keys(this.players).map(function (clientId, index) {
-                console.log(this.turnDeter[this.currentPlayer] + " "+ clientId + " " + this.currentPlayer )
-                if (this.players[clientId].socket == socket && this.turnDeter[this.currentPlayer] == clientId ) {
+                console.log(this.turnDeter[this.currentPlayer] + " " + clientId + " " + this.currentPlayer)
+                if (this.players[clientId].socket == socket && this.turnDeter[this.currentPlayer] == clientId) {
                     this.players[clientId].pushCard(id);
-                    this.currentPlayer+=1;
-                    if( !this.turnDeter[this.currentPlayer]){
+                    this.currentPlayer += 1;
+                    if (!this.turnDeter[this.currentPlayer]) {
                         console.log("shit")
-                        this.startRound(0)
+                        this.onRestart = 0;
+                        this.startRound()
                         this.currentPlayer = 0;
+                        this.state = 2;
                     }
                 }
-            },this)
+            }, this)
             this.getTable()
             this.getHand()
-        }
+        };
+
+
+    }
+
+    StartBetting(socket, amount) {
+        this.state = 3
+        Object.keys(this.players).map(function (clientId, index) {
+            if (this.players[clientId].socket == socket) {
+                console.log(clientId + " started betting  " + amount)
+                this.players[clientId].raise(amount)
+                this.onRestart = this.turnDeter.indexOf(clientId)
+                this.startRound()
+            }
+        }, this)
+    }
+    bet(socket,amount) {
+        if (this.gameStarted >0) {
+            Object.keys(this.players).map(function (clientId, index) {
+                if (this.players[clientId].socket == socket && this.turnDeter[this.currentPlayer] == clientId) {
+                    if (this.state == 2)
+                        this.StartBetting(socket,amount);
+                    else if(this.state>2){
+                        console.log(clientId + " betting " + amount)
+                        this.players[clientId].raise(amount);
+                        this.currentPlayer += 1;
+                        if (!this.turnDeter[this.currentPlayer]) {
+                            this.onRestart = 0;
+                            this.startRound()
+                            this.currentPlayer = 0;
+                        }
+                    }
+                }
+            }, this)
+            this.getTable()
+            this.getHand()
+        };
     }
 };
 
@@ -160,7 +200,7 @@ class Player extends Room_Player {
             return null
     }
     raise(nb) {
-        bet += nb;
+        this.bet += nb;
     }
 
     fold() {

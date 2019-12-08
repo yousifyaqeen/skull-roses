@@ -1,6 +1,8 @@
-/* represents a game room
+/* represents a server room
 * Each room has an id and a key
 * to connect a player to the room use addplayer
+* could be extended by games class to create a game
+* room or could be used to create chat rooms
 */
 function log(message) {
     var options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
